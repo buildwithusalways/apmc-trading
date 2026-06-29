@@ -1,0 +1,4108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SFTC Full Prototype</title>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+<div id="root"></div>
+<script>
+const {
+  useState
+} = React;
+const COLORS = {
+  ink: "#1E2A20",
+  paper: "#F5F1E8",
+  paperDark: "#ECE5D3",
+  rust: "#B33A1F",
+  gold: "#C9962A",
+  sage: "#5C7A5E",
+  charcoal: "#2A2620",
+  line: "#DCD3BE"
+};
+const SERIF = "Georgia, Cambria, 'Times New Roman', serif";
+const MONO = "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace";
+const USERS = [{
+  id: "u1",
+  name: "Admin User",
+  role: "Admin",
+  initials: "AU",
+  color: COLORS.rust
+}, {
+  id: "u2",
+  name: "Office Staff",
+  role: "Operator",
+  initials: "OS",
+  color: COLORS.sage
+}];
+function IconWrap({
+  size = 18,
+  children,
+  ...props
+}) {
+  return /*#__PURE__*/React.createElement("svg", {
+    width: size,
+    height: size,
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2",
+    strokeLinecap: "round",
+    strokeLinejoin: "round",
+    ...props
+  }, children);
+}
+function LayoutDashboardIcon(p) {
+  return /*#__PURE__*/React.createElement(IconWrap, p, /*#__PURE__*/React.createElement("rect", {
+    x: "3",
+    y: "3",
+    width: "7",
+    height: "9"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "14",
+    y: "3",
+    width: "7",
+    height: "5"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "14",
+    y: "12",
+    width: "7",
+    height: "9"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "3",
+    y: "16",
+    width: "7",
+    height: "5"
+  }));
+}
+function UsersIcon(p) {
+  return /*#__PURE__*/React.createElement(IconWrap, p, /*#__PURE__*/React.createElement("path", {
+    d: "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "9",
+    cy: "7",
+    r: "4"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M22 21v-2a4 4 0 0 0-3-3.87"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M16 3.13a4 4 0 0 1 0 7.75"
+  }));
+}
+function ReceiptIcon(p) {
+  return /*#__PURE__*/React.createElement(IconWrap, p, /*#__PURE__*/React.createElement("path", {
+    d: "M4 2h16v20l-3-2-3 2-3-2-3 2-3-2-1 2z"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M8 7h8M8 11h8M8 15h5"
+  }));
+}
+function HistoryIcon(p) {
+  return /*#__PURE__*/React.createElement(IconWrap, p, /*#__PURE__*/React.createElement("path", {
+    d: "M3 3v5h5"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M3.05 13a9 9 0 1 0 2.13-7.36L3 8"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M12 7v5l4 2"
+  }));
+}
+function SettingsIcon(p) {
+  return /*#__PURE__*/React.createElement(IconWrap, p, /*#__PURE__*/React.createElement("circle", {
+    cx: "12",
+    cy: "12",
+    r: "3"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"
+  }));
+}
+function DownloadIcon(p) {
+  return /*#__PURE__*/React.createElement(IconWrap, p, /*#__PURE__*/React.createElement("path", {
+    d: "M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"
+  }), /*#__PURE__*/React.createElement("polyline", {
+    points: "7 10 12 15 17 10"
+  }), /*#__PURE__*/React.createElement("line", {
+    x1: "12",
+    y1: "15",
+    x2: "12",
+    y2: "3"
+  }));
+}
+function PlusIcon(p) {
+  return /*#__PURE__*/React.createElement(IconWrap, p, /*#__PURE__*/React.createElement("line", {
+    x1: "12",
+    y1: "5",
+    x2: "12",
+    y2: "19"
+  }), /*#__PURE__*/React.createElement("line", {
+    x1: "5",
+    y1: "12",
+    x2: "19",
+    y2: "12"
+  }));
+}
+function XIcon(p) {
+  return /*#__PURE__*/React.createElement(IconWrap, p, /*#__PURE__*/React.createElement("line", {
+    x1: "18",
+    y1: "6",
+    x2: "6",
+    y2: "18"
+  }), /*#__PURE__*/React.createElement("line", {
+    x1: "6",
+    y1: "6",
+    x2: "18",
+    y2: "18"
+  }));
+}
+function PencilIcon(p) {
+  return /*#__PURE__*/React.createElement(IconWrap, p, /*#__PURE__*/React.createElement("path", {
+    d: "M12 20h9"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"
+  }));
+}
+function Trash2Icon(p) {
+  return /*#__PURE__*/React.createElement(IconWrap, p, /*#__PURE__*/React.createElement("polyline", {
+    points: "3 6 5 6 21 6"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M10 11v6"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M14 11v6"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"
+  }));
+}
+function ChevronDownIcon(p) {
+  return /*#__PURE__*/React.createElement(IconWrap, p, /*#__PURE__*/React.createElement("polyline", {
+    points: "6 9 12 15 18 9"
+  }));
+}
+function ChevronRightIcon(p) {
+  return /*#__PURE__*/React.createElement(IconWrap, p, /*#__PURE__*/React.createElement("polyline", {
+    points: "9 18 15 12 9 6"
+  }));
+}
+function CheckIcon(p) {
+  return /*#__PURE__*/React.createElement(IconWrap, p, /*#__PURE__*/React.createElement("polyline", {
+    points: "20 6 9 17 4 12"
+  }));
+}
+function DatabaseIcon(p) {
+  return /*#__PURE__*/React.createElement(IconWrap, p, /*#__PURE__*/React.createElement("ellipse", {
+    cx: "12",
+    cy: "5",
+    rx: "9",
+    ry: "3"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M21 5v6c0 1.66-4 3-9 3s-9-1.34-9-3V5"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M21 11v6c0 1.66-4 3-9 3s-9-1.34-9-3v-6"
+  }));
+}
+function FileDownIcon(p) {
+  return /*#__PURE__*/React.createElement(IconWrap, p, /*#__PURE__*/React.createElement("path", {
+    d: "M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
+  }), /*#__PURE__*/React.createElement("polyline", {
+    points: "14 2 14 8 20 8"
+  }), /*#__PURE__*/React.createElement("line", {
+    x1: "12",
+    y1: "11",
+    x2: "12",
+    y2: "17"
+  }), /*#__PURE__*/React.createElement("polyline", {
+    points: "9.5 14.5 12 17 14.5 14.5"
+  }));
+}
+function AlertCircleIcon(p) {
+  return /*#__PURE__*/React.createElement(IconWrap, p, /*#__PURE__*/React.createElement("circle", {
+    cx: "12",
+    cy: "12",
+    r: "10"
+  }), /*#__PURE__*/React.createElement("line", {
+    x1: "12",
+    y1: "8",
+    x2: "12",
+    y2: "12"
+  }), /*#__PURE__*/React.createElement("line", {
+    x1: "12",
+    y1: "16",
+    x2: "12.01",
+    y2: "16"
+  }));
+}
+function TruckIcon(p) {
+  return /*#__PURE__*/React.createElement(IconWrap, p, /*#__PURE__*/React.createElement("path", {
+    d: "M1 3h13v13H1z"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M14 8h4l3 3v5h-7V8z"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "5.5",
+    cy: "18",
+    r: "1.5"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "17.5",
+    cy: "18",
+    r: "1.5"
+  }));
+}
+function BookOpenIcon(p) {
+  return /*#__PURE__*/React.createElement(IconWrap, p, /*#__PURE__*/React.createElement("path", {
+    d: "M2 4h6a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H2z"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M22 4h-6a3 3 0 0 0-3 3v13a2 2 0 0 1 2-2h7z"
+  }));
+}
+function FileTextIcon(p) {
+  return /*#__PURE__*/React.createElement(IconWrap, p, /*#__PURE__*/React.createElement("path", {
+    d: "M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
+  }), /*#__PURE__*/React.createElement("polyline", {
+    points: "14 2 14 8 20 8"
+  }), /*#__PURE__*/React.createElement("line", {
+    x1: "8",
+    y1: "13",
+    x2: "16",
+    y2: "13"
+  }), /*#__PURE__*/React.createElement("line", {
+    x1: "8",
+    y1: "17",
+    x2: "16",
+    y2: "17"
+  }));
+}
+function LockIcon(p) {
+  return /*#__PURE__*/React.createElement(IconWrap, p, /*#__PURE__*/React.createElement("rect", {
+    x: "3",
+    y: "11",
+    width: "18",
+    height: "11",
+    rx: "2"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M7 11V7a5 5 0 0 1 10 0v4"
+  }));
+}
+function LogOutIcon(p) {
+  return /*#__PURE__*/React.createElement(IconWrap, p, /*#__PURE__*/React.createElement("path", {
+    d: "M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"
+  }), /*#__PURE__*/React.createElement("polyline", {
+    points: "16 17 21 12 16 7"
+  }), /*#__PURE__*/React.createElement("line", {
+    x1: "21",
+    y1: "12",
+    x2: "9",
+    y2: "12"
+  }));
+}
+function formatDate(iso) {
+  const d = new Date(iso);
+  return d.toLocaleDateString("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric"
+  }) + " · " + d.toLocaleTimeString("en-IN", {
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+}
+function formatCurrency(n) {
+  return "₹" + Number(n || 0).toLocaleString("en-IN", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+}
+function triggerDownload(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+function downloadCSV(filename, headers, rows) {
+  const escape = v => `"${String(v ?? "").replace(/"/g, '""')}"`;
+  const csv = [headers.join(","), ...rows.map(r => headers.map(h => escape(r[h])).join(","))].join("\n");
+  triggerDownload(new Blob([csv], {
+    type: "text/csv;charset=utf-8;"
+  }), filename);
+}
+function downloadJSON(filename, data) {
+  triggerDownload(new Blob([JSON.stringify(data, null, 2)], {
+    type: "application/json"
+  }), filename);
+}
+let idCounter = 1000;
+function nextId() {
+  idCounter += 1;
+  return idCounter;
+}
+function fieldLabel(f) {
+  return {
+    name: "Name",
+    place: "Place",
+    mobile: "Mobile No",
+    gstin: "GSTIN",
+    balance: "Opening Balance",
+    balanceType: "Balance Type"
+  }[f] || f;
+}
+function actionColor(action) {
+  return {
+    Created: COLORS.rust,
+    Updated: COLORS.gold,
+    Deleted: "#8A8377"
+  }[action] || COLORS.charcoal;
+}
+
+// ---------------------------------------------------------------------------
+// Shared small UI pieces
+// ---------------------------------------------------------------------------
+function Panel({
+  title,
+  children,
+  right
+}) {
+  return /*#__PURE__*/React.createElement("div", {
+    className: "bg-white rounded-lg",
+    style: {
+      border: `1px solid ${COLORS.line}`
+    }
+  }, title && /*#__PURE__*/React.createElement("div", {
+    className: "px-5 py-4 flex items-center justify-between",
+    style: {
+      borderBottom: `1px solid ${COLORS.line}`
+    }
+  }, /*#__PURE__*/React.createElement("h2", {
+    className: "font-semibold",
+    style: {
+      fontFamily: SERIF
+    }
+  }, title), right), /*#__PURE__*/React.createElement("div", {
+    className: "p-5"
+  }, children));
+}
+function Field({
+  label,
+  children
+}) {
+  return /*#__PURE__*/React.createElement("label", {
+    className: "block"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "block text-xs text-stone-500 mb-1"
+  }, label), children);
+}
+function Th({
+  children,
+  right
+}) {
+  return /*#__PURE__*/React.createElement("th", {
+    className: `px-4 py-2.5 font-medium text-stone-600 ${right ? "text-right" : "text-left"}`
+  }, children);
+}
+function Td({
+  children,
+  right,
+  mono,
+  bold
+}) {
+  return /*#__PURE__*/React.createElement("td", {
+    className: `px-4 py-3 ${right ? "text-right" : "text-left"} ${bold ? "font-medium" : ""}`,
+    style: mono ? {
+      fontFamily: MONO
+    } : {}
+  }, children);
+}
+function Table({
+  columns,
+  children
+}) {
+  return /*#__PURE__*/React.createElement("div", {
+    className: "bg-white rounded-lg",
+    style: {
+      border: `1px solid ${COLORS.line}`
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "overflow-x-auto"
+  }, /*#__PURE__*/React.createElement("table", {
+    className: "w-full text-sm"
+  }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", {
+    style: {
+      background: COLORS.paperDark
+    }
+  }, columns.map((c, i) => /*#__PURE__*/React.createElement(Th, {
+    key: i,
+    right: c.right
+  }, c.label)))), /*#__PURE__*/React.createElement("tbody", null, children))));
+}
+function EmptyRow({
+  span,
+  text
+}) {
+  return /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", {
+    colSpan: span,
+    className: "px-4 py-8 text-center text-stone-500"
+  }, text));
+}
+function PrimaryButton({
+  children,
+  onClick,
+  icon: Icon
+}) {
+  return /*#__PURE__*/React.createElement("button", {
+    onClick: onClick,
+    className: "flex items-center gap-1.5 px-3 py-2 rounded-md text-sm text-white",
+    style: {
+      background: COLORS.rust
+    }
+  }, Icon && /*#__PURE__*/React.createElement(Icon, {
+    size: 15
+  }), children);
+}
+function GhostButton({
+  children,
+  onClick,
+  icon: Icon
+}) {
+  return /*#__PURE__*/React.createElement("button", {
+    onClick: onClick,
+    className: "flex items-center gap-1.5 px-3 py-2 rounded-md text-sm",
+    style: {
+      border: `1px solid ${COLORS.line}`
+    }
+  }, Icon && /*#__PURE__*/React.createElement(Icon, {
+    size: 15
+  }), children);
+}
+function Toolbar({
+  description,
+  children
+}) {
+  return /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center justify-between flex-wrap gap-3 mb-4"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "text-sm text-stone-600 max-w-2xl"
+  }, description), /*#__PURE__*/React.createElement("div", {
+    className: "flex gap-2"
+  }, children));
+}
+function PreviewNote({
+  text
+}) {
+  return /*#__PURE__*/React.createElement("div", {
+    className: "flex items-start gap-2 text-xs px-4 py-3 rounded-md mb-4",
+    style: {
+      background: "#FBF4E8",
+      border: `1px solid ${COLORS.gold}`,
+      color: "#7A5A12"
+    }
+  }, /*#__PURE__*/React.createElement(AlertCircleIcon, {
+    size: 14,
+    className: "mt-0.5 flex-shrink-0"
+  }), /*#__PURE__*/React.createElement("span", null, text));
+}
+
+// ---------------------------------------------------------------------------
+// Login
+// ---------------------------------------------------------------------------
+function LoginScreen({
+  onLogin
+}) {
+  const [selected, setSelected] = useState("u1");
+  const [password, setPassword] = useState("");
+  return /*#__PURE__*/React.createElement("div", {
+    className: "min-h-screen flex items-center justify-center",
+    style: {
+      background: COLORS.ink
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "w-full max-w-sm bg-white rounded-lg p-7"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex flex-col items-center mb-6"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "w-12 h-12 rounded flex items-center justify-center font-bold text-white mb-3",
+    style: {
+      background: COLORS.rust,
+      fontFamily: SERIF,
+      fontSize: 18
+    }
+  }, "SF"), /*#__PURE__*/React.createElement("div", {
+    className: "font-semibold text-center",
+    style: {
+      fontFamily: SERIF
+    }
+  }, "Shree Fakkireshwara Trading Co."), /*#__PURE__*/React.createElement("div", {
+    className: "text-xs text-stone-500"
+  }, "APMC Byadgi · SFTC-2026-27")), /*#__PURE__*/React.createElement("div", {
+    className: "space-y-3"
+  }, /*#__PURE__*/React.createElement(Field, {
+    label: "Sign in as"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "space-y-2"
+  }, USERS.map(u => /*#__PURE__*/React.createElement("button", {
+    key: u.id,
+    onClick: () => setSelected(u.id),
+    className: "w-full flex items-center gap-2 px-3 py-2 rounded-md text-left",
+    style: selected === u.id ? {
+      border: `1px solid ${COLORS.rust}`,
+      background: "#FBF0EC"
+    } : {
+      border: `1px solid ${COLORS.line}`
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-semibold",
+    style: {
+      background: u.color
+    }
+  }, u.initials), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    className: "text-sm font-medium"
+  }, u.name), /*#__PURE__*/React.createElement("div", {
+    className: "text-xs text-stone-500"
+  }, u.role)), selected === u.id && /*#__PURE__*/React.createElement(CheckIcon, {
+    size: 14,
+    className: "ml-auto",
+    style: {
+      color: COLORS.rust
+    }
+  }))))), /*#__PURE__*/React.createElement(Field, {
+    label: "Password"
+  }, /*#__PURE__*/React.createElement("input", {
+    type: "password",
+    className: "sftc-input",
+    placeholder: "Demo only — any password works",
+    value: password,
+    onChange: e => setPassword(e.target.value)
+  })), /*#__PURE__*/React.createElement("button", {
+    onClick: () => onLogin(selected),
+    className: "w-full px-4 py-2.5 rounded-md text-sm text-white font-medium mt-2",
+    style: {
+      background: COLORS.rust
+    }
+  }, "Sign in")), /*#__PURE__*/React.createElement("div", {
+    className: "text-xs text-stone-400 text-center mt-5"
+  }, "Prototype build · no real authentication")));
+}
+
+// ---------------------------------------------------------------------------
+// Dashboard
+// ---------------------------------------------------------------------------
+function Dashboard({
+  accounts,
+  bills,
+  auditLog,
+  users,
+  setActiveTab
+}) {
+  const totalSales = bills.reduce((s, b) => s + b.amount, 0);
+  const debtors = accounts.filter(a => a.balanceType === "Dr").reduce((s, a) => s + Number(a.balance), 0);
+  const recent = auditLog.slice(0, 5);
+  return /*#__PURE__*/React.createElement("div", {
+    className: "space-y-8"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+  }, /*#__PURE__*/React.createElement(StatCard, {
+    label: "Sale bills logged",
+    value: bills.length
+  }), /*#__PURE__*/React.createElement(StatCard, {
+    label: "Total sale value",
+    value: formatCurrency(totalSales)
+  }), /*#__PURE__*/React.createElement(StatCard, {
+    label: "Active accounts",
+    value: accounts.length
+  }), /*#__PURE__*/React.createElement(StatCard, {
+    label: "Sundry debtors",
+    value: formatCurrency(debtors)
+  })), /*#__PURE__*/React.createElement(Panel, {
+    title: "Recent activity",
+    right: /*#__PURE__*/React.createElement("button", {
+      onClick: () => setActiveTab("audit"),
+      className: "text-sm",
+      style: {
+        color: COLORS.rust
+      }
+    }, "View full audit trail →")
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "-m-5 divide-y",
+    style: {
+      borderColor: COLORS.line
+    }
+  }, recent.map(e => /*#__PURE__*/React.createElement(AuditRow, {
+    key: e.id,
+    entry: e,
+    users: users,
+    compact: true
+  })))));
+}
+function StatCard({
+  label,
+  value
+}) {
+  return /*#__PURE__*/React.createElement("div", {
+    className: "bg-white rounded-lg p-5",
+    style: {
+      border: `1px solid ${COLORS.line}`
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "text-xs uppercase tracking-wide text-stone-500 mb-1"
+  }, label), /*#__PURE__*/React.createElement("div", {
+    className: "text-2xl font-semibold",
+    style: {
+      fontFamily: SERIF
+    }
+  }, value));
+}
+function TypeBadge({
+  type
+}) {
+  const map = {
+    Farmer: COLORS.sage,
+    Trader: COLORS.rust,
+    Bank: COLORS.gold,
+    Others: "#7A6FA0"
+  };
+  return /*#__PURE__*/React.createElement("span", {
+    className: "px-2 py-0.5 rounded text-xs font-medium text-white",
+    style: {
+      background: map[type] || "#888"
+    }
+  }, type);
+}
+
+// ---------------------------------------------------------------------------
+// Accounts
+// ---------------------------------------------------------------------------
+function AccountsView({
+  accounts,
+  onAdd,
+  onEdit,
+  onDelete,
+  onExport
+}) {
+  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement(Toolbar, {
+    description: "Farmer, Trader, Bank and other ledger accounts."
+  }, /*#__PURE__*/React.createElement(GhostButton, {
+    onClick: onExport,
+    icon: DownloadIcon
+  }, "Export CSV"), /*#__PURE__*/React.createElement(PrimaryButton, {
+    onClick: onAdd,
+    icon: PlusIcon
+  }, "New account")), /*#__PURE__*/React.createElement(Table, {
+    columns: [{
+      label: "Name"
+    }, {
+      label: "Place"
+    }, {
+      label: "Type"
+    }, {
+      label: "Mobile"
+    }, {
+      label: "Balance",
+      right: true
+    }, {
+      label: ""
+    }]
+  }, accounts.map(a => /*#__PURE__*/React.createElement("tr", {
+    key: a.id,
+    className: "border-t",
+    style: {
+      borderColor: COLORS.line
+    }
+  }, /*#__PURE__*/React.createElement(Td, {
+    bold: true
+  }, a.name), /*#__PURE__*/React.createElement(Td, null, a.place), /*#__PURE__*/React.createElement(Td, null, /*#__PURE__*/React.createElement(TypeBadge, {
+    type: a.type
+  })), /*#__PURE__*/React.createElement(Td, {
+    mono: true
+  }, a.mobile || "—"), /*#__PURE__*/React.createElement(Td, {
+    right: true,
+    mono: true
+  }, formatCurrency(a.balance), " ", a.balanceType), /*#__PURE__*/React.createElement(Td, {
+    right: true
+  }, /*#__PURE__*/React.createElement("button", {
+    onClick: () => onEdit(a),
+    className: "text-stone-400 hover:text-stone-700 mr-2"
+  }, /*#__PURE__*/React.createElement(PencilIcon, {
+    size: 15
+  })), /*#__PURE__*/React.createElement("button", {
+    onClick: () => onDelete(a.id),
+    className: "text-stone-400 hover:text-red-600"
+  }, /*#__PURE__*/React.createElement(Trash2Icon, {
+    size: 15
+  })))))));
+}
+function MergeAccountsView({
+  accounts,
+  onMerge
+}) {
+  const [from, setFrom] = useState("");
+  const [to, setTo] = useState("");
+  return /*#__PURE__*/React.createElement("div", {
+    className: "max-w-lg"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "text-sm text-stone-600 mb-4"
+  }, "Merge two accounts that were accidentally created twice — moves the balance and history into the target account and removes the source."), /*#__PURE__*/React.createElement(Panel, null, /*#__PURE__*/React.createElement("div", {
+    className: "space-y-3"
+  }, /*#__PURE__*/React.createElement(Field, {
+    label: "From account (will be removed)"
+  }, /*#__PURE__*/React.createElement("select", {
+    className: "sftc-input",
+    value: from,
+    onChange: e => setFrom(e.target.value)
+  }, /*#__PURE__*/React.createElement("option", {
+    value: ""
+  }, "Select…"), accounts.map(a => /*#__PURE__*/React.createElement("option", {
+    key: a.id,
+    value: a.name
+  }, a.name)))), /*#__PURE__*/React.createElement(Field, {
+    label: "To account (kept)"
+  }, /*#__PURE__*/React.createElement("select", {
+    className: "sftc-input",
+    value: to,
+    onChange: e => setTo(e.target.value)
+  }, /*#__PURE__*/React.createElement("option", {
+    value: ""
+  }, "Select…"), accounts.map(a => /*#__PURE__*/React.createElement("option", {
+    key: a.id,
+    value: a.name
+  }, a.name)))), /*#__PURE__*/React.createElement("button", {
+    onClick: () => from && to && from !== to && onMerge(from, to),
+    className: "px-4 py-2 rounded-md text-sm text-white",
+    style: {
+      background: COLORS.rust
+    }
+  }, "Merge accounts"))));
+}
+function RenameAccountView({
+  accounts,
+  onRename
+}) {
+  const [target, setTarget] = useState("");
+  const [newName, setNewName] = useState("");
+  return /*#__PURE__*/React.createElement("div", {
+    className: "max-w-lg"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "text-sm text-stone-600 mb-4"
+  }, "Correct a misspelled or outdated account name without losing its history."), /*#__PURE__*/React.createElement(Panel, null, /*#__PURE__*/React.createElement("div", {
+    className: "space-y-3"
+  }, /*#__PURE__*/React.createElement(Field, {
+    label: "Account"
+  }, /*#__PURE__*/React.createElement("select", {
+    className: "sftc-input",
+    value: target,
+    onChange: e => {
+      setTarget(e.target.value);
+      setNewName(e.target.value);
+    }
+  }, /*#__PURE__*/React.createElement("option", {
+    value: ""
+  }, "Select…"), accounts.map(a => /*#__PURE__*/React.createElement("option", {
+    key: a.id,
+    value: a.name
+  }, a.name)))), /*#__PURE__*/React.createElement(Field, {
+    label: "New name"
+  }, /*#__PURE__*/React.createElement("input", {
+    className: "sftc-input",
+    value: newName,
+    onChange: e => setNewName(e.target.value)
+  })), /*#__PURE__*/React.createElement("button", {
+    onClick: () => target && newName && newName !== target && onRename(target, newName),
+    className: "px-4 py-2 rounded-md text-sm text-white",
+    style: {
+      background: COLORS.rust
+    }
+  }, "Save new name"))));
+}
+
+// ---------------------------------------------------------------------------
+// Avak (arrival)
+// ---------------------------------------------------------------------------
+function AvakEntryView({
+  entries,
+  onSave
+}) {
+  const [form, setForm] = useState({
+    date: "2026-05-15",
+    place: "",
+    farmer: "",
+    lot: "",
+    variety: "Byadgi",
+    bags: "",
+    freight: "",
+    emptyBags: "",
+    advance: "",
+    unHamali: ""
+  });
+  const set = (k, v) => setForm(prev => ({
+    ...prev,
+    [k]: v
+  }));
+  function submit() {
+    if (!form.place || !form.farmer || !form.lot || !form.bags) return;
+    onSave(form);
+    setForm({
+      date: form.date,
+      place: "",
+      farmer: "",
+      lot: "",
+      variety: "Byadgi",
+      bags: "",
+      freight: "",
+      emptyBags: "",
+      advance: "",
+      unHamali: ""
+    });
+  }
+  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("p", {
+    className: "text-sm text-stone-600 max-w-2xl mb-4"
+  }, "Record produce arriving from a farmer before it goes up for tender."), /*#__PURE__*/React.createElement("div", {
+    className: "grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-4"
+  }, /*#__PURE__*/React.createElement(Panel, null, /*#__PURE__*/React.createElement("div", {
+    className: "space-y-3"
+  }, /*#__PURE__*/React.createElement(Field, {
+    label: "Date"
+  }, /*#__PURE__*/React.createElement("input", {
+    type: "date",
+    className: "sftc-input",
+    value: form.date,
+    onChange: e => set("date", e.target.value)
+  })), /*#__PURE__*/React.createElement(Field, {
+    label: "Place"
+  }, /*#__PURE__*/React.createElement("input", {
+    className: "sftc-input",
+    placeholder: "e.g. Hanagal",
+    value: form.place,
+    onChange: e => set("place", e.target.value)
+  })), /*#__PURE__*/React.createElement(Field, {
+    label: "Farmer name"
+  }, /*#__PURE__*/React.createElement("input", {
+    className: "sftc-input",
+    placeholder: "e.g. Halesh K Patil",
+    value: form.farmer,
+    onChange: e => set("farmer", e.target.value)
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "grid grid-cols-2 gap-3"
+  }, /*#__PURE__*/React.createElement(Field, {
+    label: "Lot number"
+  }, /*#__PURE__*/React.createElement("input", {
+    className: "sftc-input",
+    value: form.lot,
+    onChange: e => set("lot", e.target.value)
+  })), /*#__PURE__*/React.createElement(Field, {
+    label: "Variety"
+  }, /*#__PURE__*/React.createElement("input", {
+    className: "sftc-input",
+    value: form.variety,
+    onChange: e => set("variety", e.target.value)
+  }))), /*#__PURE__*/React.createElement(Field, {
+    label: "No. of bags"
+  }, /*#__PURE__*/React.createElement("input", {
+    type: "number",
+    className: "sftc-input",
+    value: form.bags,
+    onChange: e => set("bags", e.target.value)
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "grid grid-cols-2 gap-3"
+  }, /*#__PURE__*/React.createElement(Field, {
+    label: "Freight"
+  }, /*#__PURE__*/React.createElement("input", {
+    type: "number",
+    className: "sftc-input",
+    value: form.freight,
+    onChange: e => set("freight", e.target.value)
+  })), /*#__PURE__*/React.createElement(Field, {
+    label: "Empty bags"
+  }, /*#__PURE__*/React.createElement("input", {
+    type: "number",
+    className: "sftc-input",
+    value: form.emptyBags,
+    onChange: e => set("emptyBags", e.target.value)
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "grid grid-cols-2 gap-3"
+  }, /*#__PURE__*/React.createElement(Field, {
+    label: "Advance"
+  }, /*#__PURE__*/React.createElement("input", {
+    type: "number",
+    className: "sftc-input",
+    value: form.advance,
+    onChange: e => set("advance", e.target.value)
+  })), /*#__PURE__*/React.createElement(Field, {
+    label: "Unloading hamali"
+  }, /*#__PURE__*/React.createElement("input", {
+    type: "number",
+    className: "sftc-input",
+    value: form.unHamali,
+    onChange: e => set("unHamali", e.target.value)
+  }))), /*#__PURE__*/React.createElement("button", {
+    onClick: submit,
+    className: "w-full px-4 py-2 rounded-md text-sm text-white mt-2",
+    style: {
+      background: COLORS.rust
+    }
+  }, "Save arrival"))), /*#__PURE__*/React.createElement(Table, {
+    columns: [{
+      label: "Lot No"
+    }, {
+      label: "Farmer"
+    }, {
+      label: "Place"
+    }, {
+      label: "Variety"
+    }, {
+      label: "Bags",
+      right: true
+    }, {
+      label: "Status"
+    }]
+  }, entries.map(e => /*#__PURE__*/React.createElement("tr", {
+    key: e.id,
+    className: "border-t",
+    style: {
+      borderColor: COLORS.line
+    }
+  }, /*#__PURE__*/React.createElement(Td, {
+    bold: true,
+    mono: true
+  }, e.lot), /*#__PURE__*/React.createElement(Td, null, e.farmer), /*#__PURE__*/React.createElement(Td, null, e.place), /*#__PURE__*/React.createElement(Td, null, e.variety), /*#__PURE__*/React.createElement(Td, {
+    right: true
+  }, e.bags), /*#__PURE__*/React.createElement(Td, null, e.billed ? /*#__PURE__*/React.createElement("span", {
+    className: "text-xs px-2 py-0.5 rounded text-white",
+    style: {
+      background: COLORS.sage
+    }
+  }, "Sold") : e.rate ? /*#__PURE__*/React.createElement("span", {
+    className: "text-xs px-2 py-0.5 rounded text-white",
+    style: {
+      background: COLORS.gold
+    }
+  }, "Rated") : /*#__PURE__*/React.createElement("span", {
+    className: "text-xs px-2 py-0.5 rounded",
+    style: {
+      background: COLORS.paperDark
+    }
+  }, "Awaiting tender")))), entries.length === 0 && /*#__PURE__*/React.createElement(EmptyRow, {
+    span: 6,
+    text: "No arrivals recorded yet."
+  }))));
+}
+function AvakListView({
+  entries
+}) {
+  const [from, setFrom] = useState("2026-04-01");
+  const [to, setTo] = useState("2027-03-31");
+  const filtered = entries.filter(e => e.date >= from && e.date <= to);
+  const totalBags = filtered.reduce((s, e) => s + e.bags, 0);
+  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("p", {
+    className: "text-sm text-stone-600 max-w-2xl mb-4"
+  }, "Read-only register of every lot received in the date range."), /*#__PURE__*/React.createElement("div", {
+    className: "flex gap-3 mb-4 flex-wrap"
+  }, /*#__PURE__*/React.createElement(Field, {
+    label: "From"
+  }, /*#__PURE__*/React.createElement("input", {
+    type: "date",
+    className: "sftc-input",
+    value: from,
+    onChange: e => setFrom(e.target.value)
+  })), /*#__PURE__*/React.createElement(Field, {
+    label: "To"
+  }, /*#__PURE__*/React.createElement("input", {
+    type: "date",
+    className: "sftc-input",
+    value: to,
+    onChange: e => setTo(e.target.value)
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "flex items-end"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "text-sm text-stone-500 px-2 py-2"
+  }, filtered.length, " lots · ", totalBags, " bags total"))), /*#__PURE__*/React.createElement(Table, {
+    columns: [{
+      label: "Date"
+    }, {
+      label: "Lot No"
+    }, {
+      label: "Farmer"
+    }, {
+      label: "Place"
+    }, {
+      label: "Variety"
+    }, {
+      label: "Bags",
+      right: true
+    }]
+  }, filtered.map(e => /*#__PURE__*/React.createElement("tr", {
+    key: e.id,
+    className: "border-t",
+    style: {
+      borderColor: COLORS.line
+    }
+  }, /*#__PURE__*/React.createElement(Td, null, e.date), /*#__PURE__*/React.createElement(Td, {
+    mono: true,
+    bold: true
+  }, e.lot), /*#__PURE__*/React.createElement(Td, null, e.farmer), /*#__PURE__*/React.createElement(Td, null, e.place), /*#__PURE__*/React.createElement(Td, null, e.variety), /*#__PURE__*/React.createElement(Td, {
+    right: true
+  }, e.bags))), filtered.length === 0 && /*#__PURE__*/React.createElement(EmptyRow, {
+    span: 6,
+    text: "No arrivals in this range."
+  })));
+}
+
+// ---------------------------------------------------------------------------
+// Tender / rate entry
+// ---------------------------------------------------------------------------
+function TenderView({
+  entries,
+  accounts,
+  onAssignRate,
+  onGenerateBill
+}) {
+  const traders = accounts.filter(a => a.type === "Trader");
+  const pending = entries.filter(e => !e.billed);
+  const [drafts, setDrafts] = useState({});
+  function setDraft(id, field, val) {
+    setDrafts(p => ({
+      ...p,
+      [id]: {
+        ...p[id],
+        [field]: val
+      }
+    }));
+  }
+  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("p", {
+    className: "text-sm text-stone-600 max-w-2xl mb-4"
+  }, "Assign a tender rate and buyer to each unsold lot, then generate the sale bill in one step."), /*#__PURE__*/React.createElement(Table, {
+    columns: [{
+      label: "Lot No"
+    }, {
+      label: "Farmer"
+    }, {
+      label: "Bags",
+      right: true
+    }, {
+      label: "Rate / quintal"
+    }, {
+      label: "Buyer"
+    }, {
+      label: ""
+    }]
+  }, pending.map(e => {
+    const d = drafts[e.id] || {
+      rate: e.rate || "",
+      buyer: e.buyer || ""
+    };
+    return /*#__PURE__*/React.createElement("tr", {
+      key: e.id,
+      className: "border-t",
+      style: {
+        borderColor: COLORS.line
+      }
+    }, /*#__PURE__*/React.createElement(Td, {
+      bold: true,
+      mono: true
+    }, e.lot), /*#__PURE__*/React.createElement(Td, null, e.farmer), /*#__PURE__*/React.createElement(Td, {
+      right: true
+    }, e.bags), /*#__PURE__*/React.createElement(Td, null, /*#__PURE__*/React.createElement("input", {
+      type: "number",
+      className: "sftc-input",
+      style: {
+        width: 120
+      },
+      value: d.rate,
+      onChange: ev => setDraft(e.id, "rate", ev.target.value)
+    })), /*#__PURE__*/React.createElement(Td, null, /*#__PURE__*/React.createElement("select", {
+      className: "sftc-input",
+      style: {
+        width: 180
+      },
+      value: d.buyer,
+      onChange: ev => setDraft(e.id, "buyer", ev.target.value)
+    }, /*#__PURE__*/React.createElement("option", {
+      value: ""
+    }, "Select buyer…"), traders.map(t => /*#__PURE__*/React.createElement("option", {
+      key: t.id,
+      value: t.name
+    }, t.name)))), /*#__PURE__*/React.createElement(Td, {
+      right: true
+    }, e.rate && e.buyer ? /*#__PURE__*/React.createElement("button", {
+      onClick: () => onGenerateBill(e),
+      className: "px-3 py-1.5 rounded-md text-xs text-white whitespace-nowrap",
+      style: {
+        background: COLORS.sage
+      }
+    }, "Generate bill") : /*#__PURE__*/React.createElement("button", {
+      onClick: () => d.rate && d.buyer && onAssignRate(e.id, d.rate, d.buyer),
+      className: "px-3 py-1.5 rounded-md text-xs text-white whitespace-nowrap",
+      style: {
+        background: COLORS.rust
+      }
+    }, "Save rate")));
+  }), pending.length === 0 && /*#__PURE__*/React.createElement(EmptyRow, {
+    span: 6,
+    text: "No lots awaiting tender — every arrival has been sold."
+  })));
+}
+
+// ---------------------------------------------------------------------------
+// Market rates / variety master
+// ---------------------------------------------------------------------------
+function MarketRatesView({
+  rates,
+  onSave
+}) {
+  const [form, setForm] = useState({
+    ...rates
+  });
+  const set = (k, v) => setForm(p => ({
+    ...p,
+    [k]: v
+  }));
+  return /*#__PURE__*/React.createElement("div", {
+    className: "max-w-md"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "text-sm text-stone-600 mb-4"
+  }, "Default charges applied to every new bill — packing, hamali, weighing fee, commission, cess and GST."), /*#__PURE__*/React.createElement(Panel, null, /*#__PURE__*/React.createElement("div", {
+    className: "space-y-3"
+  }, /*#__PURE__*/React.createElement(Field, {
+    label: "Effective date"
+  }, /*#__PURE__*/React.createElement("input", {
+    type: "date",
+    className: "sftc-input",
+    value: form.effectiveDate,
+    onChange: e => set("effectiveDate", e.target.value)
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "grid grid-cols-2 gap-3"
+  }, /*#__PURE__*/React.createElement(Field, {
+    label: "Packing / bag (farmer)"
+  }, /*#__PURE__*/React.createElement("input", {
+    type: "number",
+    className: "sftc-input",
+    value: form.packFarmer,
+    onChange: e => set("packFarmer", e.target.value)
+  })), /*#__PURE__*/React.createElement(Field, {
+    label: "Hamali / bag (farmer)"
+  }, /*#__PURE__*/React.createElement("input", {
+    type: "number",
+    className: "sftc-input",
+    value: form.hamaliFarmer,
+    onChange: e => set("hamaliFarmer", e.target.value)
+  })), /*#__PURE__*/React.createElement(Field, {
+    label: "Packing / bag (buyer)"
+  }, /*#__PURE__*/React.createElement("input", {
+    type: "number",
+    className: "sftc-input",
+    value: form.packBuyer,
+    onChange: e => set("packBuyer", e.target.value)
+  })), /*#__PURE__*/React.createElement(Field, {
+    label: "Hamali / bag (buyer)"
+  }, /*#__PURE__*/React.createElement("input", {
+    type: "number",
+    className: "sftc-input",
+    value: form.hamaliBuyer,
+    onChange: e => set("hamaliBuyer", e.target.value)
+  })), /*#__PURE__*/React.createElement(Field, {
+    label: "Weighman fee / bag"
+  }, /*#__PURE__*/React.createElement("input", {
+    type: "number",
+    className: "sftc-input",
+    value: form.weighFee,
+    onChange: e => set("weighFee", e.target.value)
+  })), /*#__PURE__*/React.createElement(Field, {
+    label: "Dalali (commission) %"
+  }, /*#__PURE__*/React.createElement("input", {
+    type: "number",
+    className: "sftc-input",
+    value: form.dalali,
+    onChange: e => set("dalali", e.target.value)
+  })), /*#__PURE__*/React.createElement(Field, {
+    label: "Cess %"
+  }, /*#__PURE__*/React.createElement("input", {
+    type: "number",
+    className: "sftc-input",
+    value: form.cess,
+    onChange: e => set("cess", e.target.value)
+  })), /*#__PURE__*/React.createElement(Field, {
+    label: "GST %"
+  }, /*#__PURE__*/React.createElement("input", {
+    type: "number",
+    className: "sftc-input",
+    value: form.gst,
+    onChange: e => set("gst", e.target.value)
+  }))), /*#__PURE__*/React.createElement("button", {
+    onClick: () => onSave(form),
+    className: "px-4 py-2 rounded-md text-sm text-white mt-1",
+    style: {
+      background: COLORS.rust
+    }
+  }, "Save rates"))));
+}
+function VarietyMasterView({
+  varieties,
+  onAdd,
+  onDelete
+}) {
+  const [name, setName] = useState("");
+  return /*#__PURE__*/React.createElement("div", {
+    className: "max-w-md"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "text-sm text-stone-600 mb-4"
+  }, "Manage the list of chilli varieties available across avak entry, tender and bills."), /*#__PURE__*/React.createElement(Panel, null, /*#__PURE__*/React.createElement("div", {
+    className: "flex gap-2 mb-4"
+  }, /*#__PURE__*/React.createElement("input", {
+    className: "sftc-input",
+    placeholder: "New variety name",
+    value: name,
+    onChange: e => setName(e.target.value)
+  }), /*#__PURE__*/React.createElement(PrimaryButton, {
+    icon: PlusIcon,
+    onClick: () => {
+      if (name.trim()) {
+        onAdd(name.trim());
+        setName("");
+      }
+    }
+  }, "Add")), /*#__PURE__*/React.createElement("div", {
+    className: "space-y-2"
+  }, varieties.map(v => /*#__PURE__*/React.createElement("div", {
+    key: v.id,
+    className: "flex items-center justify-between px-3 py-2 rounded-md",
+    style: {
+      border: `1px solid ${COLORS.line}`
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "text-sm"
+  }, v.name), /*#__PURE__*/React.createElement("button", {
+    onClick: () => onDelete(v.id),
+    className: "text-stone-400 hover:text-red-600"
+  }, /*#__PURE__*/React.createElement(Trash2Icon, {
+    size: 15
+  })))))));
+}
+
+// ---------------------------------------------------------------------------
+// Bills (sale / purchase)
+// ---------------------------------------------------------------------------
+function BillsView({
+  bills,
+  onAdd,
+  onDelete,
+  onExport,
+  title,
+  description,
+  partyLabel
+}) {
+  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement(Toolbar, {
+    description: description
+  }, /*#__PURE__*/React.createElement(GhostButton, {
+    onClick: onExport,
+    icon: DownloadIcon
+  }, "Export CSV"), /*#__PURE__*/React.createElement(PrimaryButton, {
+    onClick: onAdd,
+    icon: PlusIcon
+  }, title)), /*#__PURE__*/React.createElement(Table, {
+    columns: [{
+      label: "Bill No"
+    }, {
+      label: "Date"
+    }, {
+      label: partyLabel
+    }, {
+      label: "Lot"
+    }, {
+      label: "Bags",
+      right: true
+    }, {
+      label: "Weight (kg)",
+      right: true
+    }, {
+      label: "Rate",
+      right: true
+    }, {
+      label: "Amount",
+      right: true
+    }, {
+      label: ""
+    }]
+  }, bills.map(b => /*#__PURE__*/React.createElement("tr", {
+    key: b.id,
+    className: "border-t",
+    style: {
+      borderColor: COLORS.line
+    }
+  }, /*#__PURE__*/React.createElement(Td, {
+    bold: true,
+    mono: true
+  }, "#", b.billNo), /*#__PURE__*/React.createElement(Td, null, b.date), /*#__PURE__*/React.createElement(Td, null, b.party), /*#__PURE__*/React.createElement(Td, null, b.lot), /*#__PURE__*/React.createElement(Td, {
+    right: true
+  }, b.bags), /*#__PURE__*/React.createElement(Td, {
+    right: true,
+    mono: true
+  }, b.weight.toFixed(1)), /*#__PURE__*/React.createElement(Td, {
+    right: true,
+    mono: true
+  }, formatCurrency(b.rate)), /*#__PURE__*/React.createElement(Td, {
+    right: true,
+    bold: true,
+    mono: true
+  }, formatCurrency(b.amount)), /*#__PURE__*/React.createElement(Td, {
+    right: true
+  }, /*#__PURE__*/React.createElement("button", {
+    onClick: () => onDelete(b.id),
+    className: "text-stone-400 hover:text-red-600"
+  }, /*#__PURE__*/React.createElement(Trash2Icon, {
+    size: 15
+  }))))), bills.length === 0 && /*#__PURE__*/React.createElement(EmptyRow, {
+    span: 9,
+    text: "No bills yet."
+  })));
+}
+function DeliveryBookView({
+  deliveries,
+  onAdd
+}) {
+  const [form, setForm] = useState({
+    date: "2026-05-15",
+    lot: "",
+    buyer: "",
+    bags: ""
+  });
+  const set = (k, v) => setForm(p => ({
+    ...p,
+    [k]: v
+  }));
+  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("p", {
+    className: "text-sm text-stone-600 max-w-2xl mb-4"
+  }, "Track which sold lots have physically been handed over to the buyer."), /*#__PURE__*/React.createElement("div", {
+    className: "grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-4"
+  }, /*#__PURE__*/React.createElement(Panel, null, /*#__PURE__*/React.createElement("div", {
+    className: "space-y-3"
+  }, /*#__PURE__*/React.createElement(Field, {
+    label: "Date"
+  }, /*#__PURE__*/React.createElement("input", {
+    type: "date",
+    className: "sftc-input",
+    value: form.date,
+    onChange: e => set("date", e.target.value)
+  })), /*#__PURE__*/React.createElement(Field, {
+    label: "Lot No"
+  }, /*#__PURE__*/React.createElement("input", {
+    className: "sftc-input",
+    value: form.lot,
+    onChange: e => set("lot", e.target.value)
+  })), /*#__PURE__*/React.createElement(Field, {
+    label: "Buyer"
+  }, /*#__PURE__*/React.createElement("input", {
+    className: "sftc-input",
+    value: form.buyer,
+    onChange: e => set("buyer", e.target.value)
+  })), /*#__PURE__*/React.createElement(Field, {
+    label: "Bags"
+  }, /*#__PURE__*/React.createElement("input", {
+    type: "number",
+    className: "sftc-input",
+    value: form.bags,
+    onChange: e => set("bags", e.target.value)
+  })), /*#__PURE__*/React.createElement("button", {
+    onClick: () => {
+      if (form.lot && form.buyer) {
+        onAdd(form);
+        setForm({
+          ...form,
+          lot: "",
+          buyer: "",
+          bags: ""
+        });
+      }
+    },
+    className: "w-full px-4 py-2 rounded-md text-sm text-white",
+    style: {
+      background: COLORS.rust
+    }
+  }, "Mark delivered"))), /*#__PURE__*/React.createElement(Table, {
+    columns: [{
+      label: "Date"
+    }, {
+      label: "Lot No"
+    }, {
+      label: "Buyer"
+    }, {
+      label: "Bags",
+      right: true
+    }, {
+      label: "Status"
+    }]
+  }, deliveries.map(d => /*#__PURE__*/React.createElement("tr", {
+    key: d.id,
+    className: "border-t",
+    style: {
+      borderColor: COLORS.line
+    }
+  }, /*#__PURE__*/React.createElement(Td, null, d.date), /*#__PURE__*/React.createElement(Td, {
+    mono: true,
+    bold: true
+  }, d.lot), /*#__PURE__*/React.createElement(Td, null, d.buyer), /*#__PURE__*/React.createElement(Td, {
+    right: true
+  }, d.bags), /*#__PURE__*/React.createElement(Td, null, /*#__PURE__*/React.createElement("span", {
+    className: "text-xs px-2 py-0.5 rounded text-white",
+    style: {
+      background: COLORS.sage
+    }
+  }, d.status)))), deliveries.length === 0 && /*#__PURE__*/React.createElement(EmptyRow, {
+    span: 5,
+    text: "No deliveries recorded yet."
+  }))));
+}
+function EditCancelView({
+  onCancelBill,
+  onSimulate
+}) {
+  const [billNo, setBillNo] = useState("");
+  const [lotFrom, setLotFrom] = useState("");
+  const [buyerFrom, setBuyerFrom] = useState("");
+  const [buyerTo, setBuyerTo] = useState("");
+  const [oldFarmer, setOldFarmer] = useState("");
+  const [newFarmer, setNewFarmer] = useState("");
+  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement(PreviewNote, {
+    text: "These actions are wired for the demo where it matters most (cancelling a bill). The transfer actions show how the screen works and log to the audit trail, without recalculating dependent ledgers — that logic gets built in the full implementation."
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "grid grid-cols-1 lg:grid-cols-3 gap-4"
+  }, /*#__PURE__*/React.createElement(Panel, {
+    title: "Transfer lot to different buyer"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "space-y-3"
+  }, /*#__PURE__*/React.createElement(Field, {
+    label: "Lot No"
+  }, /*#__PURE__*/React.createElement("input", {
+    className: "sftc-input",
+    value: lotFrom,
+    onChange: e => setLotFrom(e.target.value)
+  })), /*#__PURE__*/React.createElement(Field, {
+    label: "Current buyer"
+  }, /*#__PURE__*/React.createElement("input", {
+    className: "sftc-input",
+    value: buyerFrom,
+    onChange: e => setBuyerFrom(e.target.value)
+  })), /*#__PURE__*/React.createElement(Field, {
+    label: "New buyer"
+  }, /*#__PURE__*/React.createElement("input", {
+    className: "sftc-input",
+    value: buyerTo,
+    onChange: e => setBuyerTo(e.target.value)
+  })), /*#__PURE__*/React.createElement("button", {
+    onClick: () => lotFrom && buyerTo && onSimulate("Lot transfer", `Lot ${lotFrom}: ${buyerFrom || "—"} → ${buyerTo}`),
+    className: "w-full px-3 py-2 rounded-md text-sm text-white",
+    style: {
+      background: COLORS.gold
+    }
+  }, "Transfer"))), /*#__PURE__*/React.createElement(Panel, {
+    title: "Correct farmer name on a lot"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "space-y-3"
+  }, /*#__PURE__*/React.createElement(Field, {
+    label: "Existing farmer name"
+  }, /*#__PURE__*/React.createElement("input", {
+    className: "sftc-input",
+    value: oldFarmer,
+    onChange: e => setOldFarmer(e.target.value)
+  })), /*#__PURE__*/React.createElement(Field, {
+    label: "Corrected name"
+  }, /*#__PURE__*/React.createElement("input", {
+    className: "sftc-input",
+    value: newFarmer,
+    onChange: e => setNewFarmer(e.target.value)
+  })), /*#__PURE__*/React.createElement("button", {
+    onClick: () => oldFarmer && newFarmer && onSimulate("Farmer name correction", `${oldFarmer} → ${newFarmer}`),
+    className: "w-full px-3 py-2 rounded-md text-sm text-white",
+    style: {
+      background: COLORS.gold
+    }
+  }, "Save correction"))), /*#__PURE__*/React.createElement(Panel, {
+    title: "Cancel a sale bill"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "space-y-3"
+  }, /*#__PURE__*/React.createElement(Field, {
+    label: "Bill number"
+  }, /*#__PURE__*/React.createElement("input", {
+    className: "sftc-input",
+    value: billNo,
+    onChange: e => setBillNo(e.target.value)
+  })), /*#__PURE__*/React.createElement("button", {
+    onClick: () => billNo && onCancelBill(billNo),
+    className: "w-full px-3 py-2 rounded-md text-sm text-white",
+    style: {
+      background: COLORS.rust
+    }
+  }, "Cancel bill")))));
+}
+
+// ---------------------------------------------------------------------------
+// Books & registers
+// ---------------------------------------------------------------------------
+function DayBookView({
+  bills,
+  purchaseBills
+}) {
+  const [date, setDate] = useState("2026-05-07");
+  const saleToday = bills.filter(b => b.date === date);
+  const purchaseToday = purchaseBills.filter(b => b.date === date);
+  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("p", {
+    className: "text-sm text-stone-600 max-w-2xl mb-4"
+  }, "Every sale and purchase bill raised on a single day, side by side."), /*#__PURE__*/React.createElement(Field, {
+    label: "Date"
+  }, /*#__PURE__*/React.createElement("input", {
+    type: "date",
+    className: "sftc-input",
+    style: {
+      width: 200
+    },
+    value: date,
+    onChange: e => setDate(e.target.value)
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4"
+  }, /*#__PURE__*/React.createElement(Table, {
+    columns: [{
+      label: "Bill No"
+    }, {
+      label: "Party"
+    }, {
+      label: "Amount",
+      right: true
+    }]
+  }, saleToday.map(b => /*#__PURE__*/React.createElement("tr", {
+    key: b.id,
+    className: "border-t",
+    style: {
+      borderColor: COLORS.line
+    }
+  }, /*#__PURE__*/React.createElement(Td, {
+    mono: true
+  }, "#", b.billNo), /*#__PURE__*/React.createElement(Td, null, b.party), /*#__PURE__*/React.createElement(Td, {
+    right: true,
+    mono: true,
+    bold: true
+  }, formatCurrency(b.amount)))), saleToday.length === 0 && /*#__PURE__*/React.createElement(EmptyRow, {
+    span: 3,
+    text: "No sale bills on this date."
+  })), /*#__PURE__*/React.createElement(Table, {
+    columns: [{
+      label: "Bill No"
+    }, {
+      label: "Party"
+    }, {
+      label: "Amount",
+      right: true
+    }]
+  }, purchaseToday.map(b => /*#__PURE__*/React.createElement("tr", {
+    key: b.id,
+    className: "border-t",
+    style: {
+      borderColor: COLORS.line
+    }
+  }, /*#__PURE__*/React.createElement(Td, {
+    mono: true
+  }, "#", b.billNo), /*#__PURE__*/React.createElement(Td, null, b.party), /*#__PURE__*/React.createElement(Td, {
+    right: true,
+    mono: true,
+    bold: true
+  }, formatCurrency(b.amount)))), purchaseToday.length === 0 && /*#__PURE__*/React.createElement(EmptyRow, {
+    span: 3,
+    text: "No purchase bills on this date."
+  }))));
+}
+function CashBookView({
+  entries,
+  onAdd
+}) {
+  const [form, setForm] = useState({
+    date: "2026-05-15",
+    particulars: "",
+    receipt: "",
+    payment: ""
+  });
+  const set = (k, v) => setForm(p => ({
+    ...p,
+    [k]: v
+  }));
+  let running = 0;
+  const withBalance = entries.map(e => {
+    running += (parseFloat(e.receipt) || 0) - (parseFloat(e.payment) || 0);
+    return {
+      ...e,
+      balance: running
+    };
+  });
+  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("p", {
+    className: "text-sm text-stone-600 max-w-2xl mb-4"
+  }, "Day-to-day cash receipts and payments with a running balance."), /*#__PURE__*/React.createElement("div", {
+    className: "flex gap-2 mb-4 flex-wrap items-end"
+  }, /*#__PURE__*/React.createElement(Field, {
+    label: "Date"
+  }, /*#__PURE__*/React.createElement("input", {
+    type: "date",
+    className: "sftc-input",
+    value: form.date,
+    onChange: e => set("date", e.target.value)
+  })), /*#__PURE__*/React.createElement(Field, {
+    label: "Particulars"
+  }, /*#__PURE__*/React.createElement("input", {
+    className: "sftc-input",
+    style: {
+      width: 220
+    },
+    value: form.particulars,
+    onChange: e => set("particulars", e.target.value)
+  })), /*#__PURE__*/React.createElement(Field, {
+    label: "Receipt"
+  }, /*#__PURE__*/React.createElement("input", {
+    type: "number",
+    className: "sftc-input",
+    style: {
+      width: 120
+    },
+    value: form.receipt,
+    onChange: e => set("receipt", e.target.value)
+  })), /*#__PURE__*/React.createElement(Field, {
+    label: "Payment"
+  }, /*#__PURE__*/React.createElement("input", {
+    type: "number",
+    className: "sftc-input",
+    style: {
+      width: 120
+    },
+    value: form.payment,
+    onChange: e => set("payment", e.target.value)
+  })), /*#__PURE__*/React.createElement(PrimaryButton, {
+    icon: PlusIcon,
+    onClick: () => {
+      if (form.particulars) {
+        onAdd(form);
+        setForm({
+          ...form,
+          particulars: "",
+          receipt: "",
+          payment: ""
+        });
+      }
+    }
+  }, "Add entry")), /*#__PURE__*/React.createElement(Table, {
+    columns: [{
+      label: "Date"
+    }, {
+      label: "Particulars"
+    }, {
+      label: "Receipt",
+      right: true
+    }, {
+      label: "Payment",
+      right: true
+    }, {
+      label: "Balance",
+      right: true
+    }]
+  }, withBalance.map(e => /*#__PURE__*/React.createElement("tr", {
+    key: e.id,
+    className: "border-t",
+    style: {
+      borderColor: COLORS.line
+    }
+  }, /*#__PURE__*/React.createElement(Td, null, e.date), /*#__PURE__*/React.createElement(Td, null, e.particulars), /*#__PURE__*/React.createElement(Td, {
+    right: true,
+    mono: true
+  }, e.receipt ? formatCurrency(e.receipt) : "—"), /*#__PURE__*/React.createElement(Td, {
+    right: true,
+    mono: true
+  }, e.payment ? formatCurrency(e.payment) : "—"), /*#__PURE__*/React.createElement(Td, {
+    right: true,
+    bold: true,
+    mono: true
+  }, formatCurrency(Math.abs(e.balance)), " ", e.balance >= 0 ? "Dr" : "Cr"))), withBalance.length === 0 && /*#__PURE__*/React.createElement(EmptyRow, {
+    span: 5,
+    text: "No cash entries yet."
+  })));
+}
+function WeighmentRegisterView({
+  avakEntries
+}) {
+  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("p", {
+    className: "text-sm text-stone-600 max-w-2xl mb-4"
+  }, "Weighment record per lot — bag count and average bag weight as captured at the yard scale."), /*#__PURE__*/React.createElement(Table, {
+    columns: [{
+      label: "Lot No"
+    }, {
+      label: "Farmer"
+    }, {
+      label: "Bags",
+      right: true
+    }, {
+      label: "Avg. bag weight (kg)",
+      right: true
+    }, {
+      label: "Total weight (kg)",
+      right: true
+    }]
+  }, avakEntries.map(e => {
+    const avgWeight = 51;
+    return /*#__PURE__*/React.createElement("tr", {
+      key: e.id,
+      className: "border-t",
+      style: {
+        borderColor: COLORS.line
+      }
+    }, /*#__PURE__*/React.createElement(Td, {
+      mono: true,
+      bold: true
+    }, e.lot), /*#__PURE__*/React.createElement(Td, null, e.farmer), /*#__PURE__*/React.createElement(Td, {
+      right: true
+    }, e.bags), /*#__PURE__*/React.createElement(Td, {
+      right: true,
+      mono: true
+    }, avgWeight), /*#__PURE__*/React.createElement(Td, {
+      right: true,
+      mono: true
+    }, (e.bags * avgWeight).toFixed(1)));
+  }), avakEntries.length === 0 && /*#__PURE__*/React.createElement(EmptyRow, {
+    span: 5,
+    text: "No weighments recorded yet."
+  })));
+}
+function AkadaView({
+  bills,
+  rates
+}) {
+  const grouped = {};
+  bills.forEach(b => {
+    if (!grouped[b.party]) grouped[b.party] = {
+      bags: 0,
+      weight: 0,
+      amount: 0,
+      commission: 0
+    };
+    grouped[b.party].bags += b.bags;
+    grouped[b.party].weight += b.weight;
+    grouped[b.party].amount += b.amount;
+    grouped[b.party].commission += b.amount * (parseFloat(rates.dalali) / 100);
+  });
+  const rows = Object.entries(grouped);
+  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("p", {
+    className: "text-sm text-stone-600 max-w-2xl mb-4"
+  }, "Per-trader summary of bags sold, turnover and commission earned."), /*#__PURE__*/React.createElement(Table, {
+    columns: [{
+      label: "Trader"
+    }, {
+      label: "Bags",
+      right: true
+    }, {
+      label: "Weight (kg)",
+      right: true
+    }, {
+      label: "Turnover",
+      right: true
+    }, {
+      label: "Commission",
+      right: true
+    }]
+  }, rows.map(([party, v]) => /*#__PURE__*/React.createElement("tr", {
+    key: party,
+    className: "border-t",
+    style: {
+      borderColor: COLORS.line
+    }
+  }, /*#__PURE__*/React.createElement(Td, {
+    bold: true
+  }, party), /*#__PURE__*/React.createElement(Td, {
+    right: true
+  }, v.bags), /*#__PURE__*/React.createElement(Td, {
+    right: true,
+    mono: true
+  }, v.weight.toFixed(1)), /*#__PURE__*/React.createElement(Td, {
+    right: true,
+    mono: true
+  }, formatCurrency(v.amount)), /*#__PURE__*/React.createElement(Td, {
+    right: true,
+    mono: true,
+    bold: true
+  }, formatCurrency(v.commission)))), rows.length === 0 && /*#__PURE__*/React.createElement(EmptyRow, {
+    span: 5,
+    text: "No sale bills yet."
+  })));
+}
+function MortgageRegisterView({
+  entries,
+  accounts,
+  onAdd
+}) {
+  const [form, setForm] = useState({
+    party: "",
+    lot: "",
+    amount: "",
+    date: "2026-05-15"
+  });
+  const set = (k, v) => setForm(p => ({
+    ...p,
+    [k]: v
+  }));
+  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("p", {
+    className: "text-sm text-stone-600 max-w-2xl mb-4"
+  }, "Advances given against pledged stock held in the yard, pending sale."), /*#__PURE__*/React.createElement("div", {
+    className: "grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-4"
+  }, /*#__PURE__*/React.createElement(Panel, null, /*#__PURE__*/React.createElement("div", {
+    className: "space-y-3"
+  }, /*#__PURE__*/React.createElement(Field, {
+    label: "Party"
+  }, /*#__PURE__*/React.createElement("select", {
+    className: "sftc-input",
+    value: form.party,
+    onChange: e => set("party", e.target.value)
+  }, /*#__PURE__*/React.createElement("option", {
+    value: ""
+  }, "Select…"), accounts.map(a => /*#__PURE__*/React.createElement("option", {
+    key: a.id,
+    value: a.name
+  }, a.name)))), /*#__PURE__*/React.createElement(Field, {
+    label: "Lot No"
+  }, /*#__PURE__*/React.createElement("input", {
+    className: "sftc-input",
+    value: form.lot,
+    onChange: e => set("lot", e.target.value)
+  })), /*#__PURE__*/React.createElement(Field, {
+    label: "Advance amount"
+  }, /*#__PURE__*/React.createElement("input", {
+    type: "number",
+    className: "sftc-input",
+    value: form.amount,
+    onChange: e => set("amount", e.target.value)
+  })), /*#__PURE__*/React.createElement(Field, {
+    label: "Date"
+  }, /*#__PURE__*/React.createElement("input", {
+    type: "date",
+    className: "sftc-input",
+    value: form.date,
+    onChange: e => set("date", e.target.value)
+  })), /*#__PURE__*/React.createElement("button", {
+    onClick: () => {
+      if (form.party && form.amount) {
+        onAdd(form);
+        setForm({
+          ...form,
+          party: "",
+          lot: "",
+          amount: ""
+        });
+      }
+    },
+    className: "w-full px-4 py-2 rounded-md text-sm text-white",
+    style: {
+      background: COLORS.rust
+    }
+  }, "Record advance"))), /*#__PURE__*/React.createElement(Table, {
+    columns: [{
+      label: "Party"
+    }, {
+      label: "Lot"
+    }, {
+      label: "Amount",
+      right: true
+    }, {
+      label: "Date"
+    }, {
+      label: "Status"
+    }]
+  }, entries.map(e => /*#__PURE__*/React.createElement("tr", {
+    key: e.id,
+    className: "border-t",
+    style: {
+      borderColor: COLORS.line
+    }
+  }, /*#__PURE__*/React.createElement(Td, {
+    bold: true
+  }, e.party), /*#__PURE__*/React.createElement(Td, {
+    mono: true
+  }, e.lot), /*#__PURE__*/React.createElement(Td, {
+    right: true,
+    mono: true
+  }, formatCurrency(e.amount)), /*#__PURE__*/React.createElement(Td, null, e.date), /*#__PURE__*/React.createElement(Td, null, /*#__PURE__*/React.createElement("span", {
+    className: "text-xs px-2 py-0.5 rounded text-white",
+    style: {
+      background: e.status === "Active" ? COLORS.gold : COLORS.sage
+    }
+  }, e.status)))), entries.length === 0 && /*#__PURE__*/React.createElement(EmptyRow, {
+    span: 5,
+    text: "No mortgage entries yet."
+  }))));
+}
+
+// ---------------------------------------------------------------------------
+// Reports
+// ---------------------------------------------------------------------------
+function CessGstReportView({
+  bills,
+  rates,
+  showToast
+}) {
+  const [from, setFrom] = useState("2026-04-01");
+  const [to, setTo] = useState("2027-03-31");
+  const [whatsapp, setWhatsapp] = useState("6361476541");
+  const inRange = bills.filter(b => b.date >= from && b.date <= to);
+  const totalCess = inRange.reduce((s, b) => s + b.amount * (parseFloat(rates.cess) / 100), 0);
+  const totalGst = inRange.reduce((s, b) => s + b.amount * (parseFloat(rates.gst) / 100), 0);
+  return /*#__PURE__*/React.createElement("div", {
+    className: "max-w-2xl"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "text-sm text-stone-600 mb-4"
+  }, "Cess and GST collected on sale bills in the selected range."), /*#__PURE__*/React.createElement(Panel, null, /*#__PURE__*/React.createElement("div", {
+    className: "flex gap-3 flex-wrap mb-4"
+  }, /*#__PURE__*/React.createElement(Field, {
+    label: "From"
+  }, /*#__PURE__*/React.createElement("input", {
+    type: "date",
+    className: "sftc-input",
+    value: from,
+    onChange: e => setFrom(e.target.value)
+  })), /*#__PURE__*/React.createElement(Field, {
+    label: "To"
+  }, /*#__PURE__*/React.createElement("input", {
+    type: "date",
+    className: "sftc-input",
+    value: to,
+    onChange: e => setTo(e.target.value)
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "grid grid-cols-2 gap-4 mb-4"
+  }, /*#__PURE__*/React.createElement(StatCard, {
+    label: `Cess (${rates.cess}%)`,
+    value: formatCurrency(totalCess)
+  }), /*#__PURE__*/React.createElement(StatCard, {
+    label: `GST (${rates.gst}%)`,
+    value: formatCurrency(totalGst)
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "grid grid-cols-1 sm:grid-cols-2 gap-2 mb-4"
+  }, ["Weekly Cess Report", "GST R1", "Partywise GST", "Monthwise GST"].map(label => /*#__PURE__*/React.createElement(GhostButton, {
+    key: label,
+    onClick: () => showToast(`${label} generated (demo)`)
+  }, label))), /*#__PURE__*/React.createElement(Field, {
+    label: "Send to WhatsApp number"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex gap-2"
+  }, /*#__PURE__*/React.createElement("input", {
+    className: "sftc-input",
+    value: whatsapp,
+    onChange: e => setWhatsapp(e.target.value)
+  }), /*#__PURE__*/React.createElement(PrimaryButton, {
+    onClick: () => showToast(`GST PDF sent to ${whatsapp} (demo)`)
+  }, "Send")))));
+}
+function GstTdsSettingsView({
+  settings,
+  onSave
+}) {
+  const [form, setForm] = useState({
+    ...settings
+  });
+  const set = (k, v) => setForm(p => ({
+    ...p,
+    [k]: v
+  }));
+  return /*#__PURE__*/React.createElement("div", {
+    className: "max-w-md"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "text-sm text-stone-600 mb-4"
+  }, "Controls which bills are flagged for TDS deduction."), /*#__PURE__*/React.createElement(Panel, null, /*#__PURE__*/React.createElement("div", {
+    className: "space-y-3"
+  }, /*#__PURE__*/React.createElement(Field, {
+    label: "From"
+  }, /*#__PURE__*/React.createElement("input", {
+    type: "date",
+    className: "sftc-input",
+    value: form.from,
+    onChange: e => set("from", e.target.value)
+  })), /*#__PURE__*/React.createElement(Field, {
+    label: "To"
+  }, /*#__PURE__*/React.createElement("input", {
+    type: "date",
+    className: "sftc-input",
+    value: form.to,
+    onChange: e => set("to", e.target.value)
+  })), /*#__PURE__*/React.createElement("label", {
+    className: "flex items-center gap-2 text-sm"
+  }, /*#__PURE__*/React.createElement("input", {
+    type: "checkbox",
+    checked: form.tdsApplicable,
+    onChange: e => set("tdsApplicable", e.target.checked)
+  }), " TDS applicable"), /*#__PURE__*/React.createElement(Field, {
+    label: "Apply to"
+  }, /*#__PURE__*/React.createElement("select", {
+    className: "sftc-input",
+    value: form.threshold,
+    onChange: e => set("threshold", e.target.value)
+  }, /*#__PURE__*/React.createElement("option", {
+    value: "15000"
+  }, "Bills under ₹15,000 only"), /*#__PURE__*/React.createElement("option", {
+    value: "all"
+  }, "All bills"))), /*#__PURE__*/React.createElement("button", {
+    onClick: () => onSave(form),
+    className: "px-4 py-2 rounded-md text-sm text-white",
+    style: {
+      background: COLORS.rust
+    }
+  }, "Save settings"))));
+}
+function TrialBalanceView({
+  accounts,
+  bills,
+  purchaseBills,
+  rates
+}) {
+  const totalSales = bills.reduce((s, b) => s + b.amount, 0);
+  const totalPurchases = purchaseBills.reduce((s, b) => s + b.amount, 0);
+  const commissionIncome = bills.reduce((s, b) => s + b.amount * (parseFloat(rates.dalali) / 100), 0);
+  const totalDr = accounts.filter(a => a.balanceType === "Dr").reduce((s, a) => s + Number(a.balance), 0);
+  const totalCr = accounts.filter(a => a.balanceType === "Cr").reduce((s, a) => s + Number(a.balance), 0);
+  return /*#__PURE__*/React.createElement("div", {
+    className: "space-y-6"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+  }, /*#__PURE__*/React.createElement(StatCard, {
+    label: "Total sales",
+    value: formatCurrency(totalSales)
+  }), /*#__PURE__*/React.createElement(StatCard, {
+    label: "Total purchases",
+    value: formatCurrency(totalPurchases)
+  }), /*#__PURE__*/React.createElement(StatCard, {
+    label: "Commission income",
+    value: formatCurrency(commissionIncome)
+  }), /*#__PURE__*/React.createElement(StatCard, {
+    label: "Net (commission − nil expenses)",
+    value: formatCurrency(commissionIncome)
+  })), /*#__PURE__*/React.createElement(Panel, {
+    title: "Trial balance"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "-m-5"
+  }, /*#__PURE__*/React.createElement(Table, {
+    columns: [{
+      label: "Account"
+    }, {
+      label: "Type"
+    }, {
+      label: "Debit",
+      right: true
+    }, {
+      label: "Credit",
+      right: true
+    }]
+  }, accounts.map(a => /*#__PURE__*/React.createElement("tr", {
+    key: a.id,
+    className: "border-t",
+    style: {
+      borderColor: COLORS.line
+    }
+  }, /*#__PURE__*/React.createElement(Td, {
+    bold: true
+  }, a.name), /*#__PURE__*/React.createElement(Td, null, /*#__PURE__*/React.createElement(TypeBadge, {
+    type: a.type
+  })), /*#__PURE__*/React.createElement(Td, {
+    right: true,
+    mono: true
+  }, a.balanceType === "Dr" ? formatCurrency(a.balance) : "—"), /*#__PURE__*/React.createElement(Td, {
+    right: true,
+    mono: true
+  }, a.balanceType === "Cr" ? formatCurrency(a.balance) : "—"))), /*#__PURE__*/React.createElement("tr", {
+    className: "border-t font-semibold",
+    style: {
+      borderColor: COLORS.line,
+      background: COLORS.paperDark
+    }
+  }, /*#__PURE__*/React.createElement(Td, {
+    bold: true
+  }, "Total"), /*#__PURE__*/React.createElement(Td, null), /*#__PURE__*/React.createElement(Td, {
+    right: true,
+    mono: true,
+    bold: true
+  }, formatCurrency(totalDr)), /*#__PURE__*/React.createElement(Td, {
+    right: true,
+    mono: true,
+    bold: true
+  }, formatCurrency(totalCr)))))));
+}
+function CommissionDetailsView({
+  bills,
+  rates
+}) {
+  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("p", {
+    className: "text-sm text-stone-600 max-w-2xl mb-4"
+  }, "Commission earned on each individual sale bill."), /*#__PURE__*/React.createElement(Table, {
+    columns: [{
+      label: "Bill No"
+    }, {
+      label: "Date"
+    }, {
+      label: "Trader"
+    }, {
+      label: "Amount",
+      right: true
+    }, {
+      label: "Commission %",
+      right: true
+    }, {
+      label: "Commission ₹",
+      right: true
+    }]
+  }, bills.map(b => /*#__PURE__*/React.createElement("tr", {
+    key: b.id,
+    className: "border-t",
+    style: {
+      borderColor: COLORS.line
+    }
+  }, /*#__PURE__*/React.createElement(Td, {
+    mono: true
+  }, "#", b.billNo), /*#__PURE__*/React.createElement(Td, null, b.date), /*#__PURE__*/React.createElement(Td, {
+    bold: true
+  }, b.party), /*#__PURE__*/React.createElement(Td, {
+    right: true,
+    mono: true
+  }, formatCurrency(b.amount)), /*#__PURE__*/React.createElement(Td, {
+    right: true
+  }, rates.dalali, "%"), /*#__PURE__*/React.createElement(Td, {
+    right: true,
+    mono: true,
+    bold: true
+  }, formatCurrency(b.amount * (parseFloat(rates.dalali) / 100))))), bills.length === 0 && /*#__PURE__*/React.createElement(EmptyRow, {
+    span: 6,
+    text: "No bills yet."
+  })));
+}
+function FarmerExpensesView({
+  avakEntries,
+  expenses,
+  onAdd
+}) {
+  const [form, setForm] = useState({
+    date: "2026-05-15",
+    farmer: "",
+    description: "",
+    amount: ""
+  });
+  const set = (k, v) => setForm(p => ({
+    ...p,
+    [k]: v
+  }));
+  return /*#__PURE__*/React.createElement("div", {
+    className: "space-y-6"
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("p", {
+    className: "text-sm text-stone-600 max-w-2xl mb-3"
+  }, "Charges already deducted at arrival (freight, advance, unloading hamali)."), /*#__PURE__*/React.createElement(Table, {
+    columns: [{
+      label: "Lot No"
+    }, {
+      label: "Farmer"
+    }, {
+      label: "Freight",
+      right: true
+    }, {
+      label: "Advance",
+      right: true
+    }, {
+      label: "Unloading Hamali",
+      right: true
+    }]
+  }, avakEntries.map(e => /*#__PURE__*/React.createElement("tr", {
+    key: e.id,
+    className: "border-t",
+    style: {
+      borderColor: COLORS.line
+    }
+  }, /*#__PURE__*/React.createElement(Td, {
+    mono: true,
+    bold: true
+  }, e.lot), /*#__PURE__*/React.createElement(Td, null, e.farmer), /*#__PURE__*/React.createElement(Td, {
+    right: true,
+    mono: true
+  }, formatCurrency(e.freight)), /*#__PURE__*/React.createElement(Td, {
+    right: true,
+    mono: true
+  }, formatCurrency(e.advance)), /*#__PURE__*/React.createElement(Td, {
+    right: true,
+    mono: true
+  }, formatCurrency(e.unHamali)))))), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("p", {
+    className: "text-sm text-stone-600 max-w-2xl mb-3"
+  }, "Other ad-hoc charges to a farmer's account."), /*#__PURE__*/React.createElement("div", {
+    className: "flex gap-2 flex-wrap items-end mb-3"
+  }, /*#__PURE__*/React.createElement(Field, {
+    label: "Date"
+  }, /*#__PURE__*/React.createElement("input", {
+    type: "date",
+    className: "sftc-input",
+    value: form.date,
+    onChange: e => set("date", e.target.value)
+  })), /*#__PURE__*/React.createElement(Field, {
+    label: "Farmer"
+  }, /*#__PURE__*/React.createElement("input", {
+    className: "sftc-input",
+    value: form.farmer,
+    onChange: e => set("farmer", e.target.value)
+  })), /*#__PURE__*/React.createElement(Field, {
+    label: "Description"
+  }, /*#__PURE__*/React.createElement("input", {
+    className: "sftc-input",
+    style: {
+      width: 220
+    },
+    value: form.description,
+    onChange: e => set("description", e.target.value)
+  })), /*#__PURE__*/React.createElement(Field, {
+    label: "Amount"
+  }, /*#__PURE__*/React.createElement("input", {
+    type: "number",
+    className: "sftc-input",
+    value: form.amount,
+    onChange: e => set("amount", e.target.value)
+  })), /*#__PURE__*/React.createElement(PrimaryButton, {
+    icon: PlusIcon,
+    onClick: () => {
+      if (form.farmer && form.amount) {
+        onAdd(form);
+        setForm({
+          ...form,
+          farmer: "",
+          description: "",
+          amount: ""
+        });
+      }
+    }
+  }, "Add")), /*#__PURE__*/React.createElement(Table, {
+    columns: [{
+      label: "Date"
+    }, {
+      label: "Farmer"
+    }, {
+      label: "Description"
+    }, {
+      label: "Amount",
+      right: true
+    }]
+  }, expenses.map(e => /*#__PURE__*/React.createElement("tr", {
+    key: e.id,
+    className: "border-t",
+    style: {
+      borderColor: COLORS.line
+    }
+  }, /*#__PURE__*/React.createElement(Td, null, e.date), /*#__PURE__*/React.createElement(Td, {
+    bold: true
+  }, e.farmer), /*#__PURE__*/React.createElement(Td, null, e.description), /*#__PURE__*/React.createElement(Td, {
+    right: true,
+    mono: true
+  }, formatCurrency(e.amount)))), expenses.length === 0 && /*#__PURE__*/React.createElement(EmptyRow, {
+    span: 4,
+    text: "No additional expenses recorded."
+  }))));
+}
+function MarketListView({
+  accounts
+}) {
+  const [date, setDate] = useState("2026-05-15");
+  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("p", {
+    className: "text-sm text-stone-600 max-w-2xl mb-4"
+  }, "Snapshot of every account balance as of a chosen date."), /*#__PURE__*/React.createElement(Field, {
+    label: "As on date"
+  }, /*#__PURE__*/React.createElement("input", {
+    type: "date",
+    className: "sftc-input",
+    style: {
+      width: 200
+    },
+    value: date,
+    onChange: e => setDate(e.target.value)
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "mt-4"
+  }, /*#__PURE__*/React.createElement(Table, {
+    columns: [{
+      label: "Party Name"
+    }, {
+      label: "Type"
+    }, {
+      label: "As on date"
+    }, {
+      label: "Balance",
+      right: true
+    }]
+  }, accounts.map(a => /*#__PURE__*/React.createElement("tr", {
+    key: a.id,
+    className: "border-t",
+    style: {
+      borderColor: COLORS.line
+    }
+  }, /*#__PURE__*/React.createElement(Td, {
+    bold: true
+  }, a.name), /*#__PURE__*/React.createElement(Td, null, /*#__PURE__*/React.createElement(TypeBadge, {
+    type: a.type
+  })), /*#__PURE__*/React.createElement(Td, null, date), /*#__PURE__*/React.createElement(Td, {
+    right: true,
+    mono: true
+  }, formatCurrency(a.balance), " ", a.balanceType))))));
+}
+
+// ---------------------------------------------------------------------------
+// Audit trail
+// ---------------------------------------------------------------------------
+function AuditRow({
+  entry,
+  users,
+  compact
+}) {
+  const user = users.find(u => u.id === entry.userId);
+  return /*#__PURE__*/React.createElement("div", {
+    className: compact ? "flex items-start gap-3 px-5 py-3" : "flex items-start gap-4 px-5 py-4"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "w-2 h-2 rounded-full mt-2 flex-shrink-0",
+    style: {
+      background: actionColor(entry.action)
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-semibold flex-shrink-0",
+    style: {
+      background: user?.color || "#888"
+    }
+  }, user?.initials || "?"), /*#__PURE__*/React.createElement("div", {
+    className: "flex-1 min-w-0"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "text-sm"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "font-medium"
+  }, user?.name || "Unknown user"), /*#__PURE__*/React.createElement("span", {
+    className: "text-stone-500"
+  }, " ", entry.action.toLowerCase(), " "), /*#__PURE__*/React.createElement("span", {
+    className: "font-medium"
+  }, entry.table), /*#__PURE__*/React.createElement("span", {
+    className: "text-stone-500"
+  }, " · ", entry.recordLabel)), entry.changes ? /*#__PURE__*/React.createElement("div", {
+    className: "mt-1 space-y-0.5"
+  }, entry.changes.map((c, i) => /*#__PURE__*/React.createElement("div", {
+    key: i,
+    className: "text-xs",
+    style: {
+      fontFamily: MONO
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "text-stone-500"
+  }, c.field, ": "), /*#__PURE__*/React.createElement("span", {
+    className: "line-through text-stone-400"
+  }, c.old), /*#__PURE__*/React.createElement("span", {
+    className: "text-stone-400"
+  }, " → "), /*#__PURE__*/React.createElement("span", {
+    className: "font-semibold",
+    style: {
+      color: COLORS.rust
+    }
+  }, c.new)))) : /*#__PURE__*/React.createElement("div", {
+    className: "text-xs text-stone-500 mt-0.5"
+  }, entry.description)), /*#__PURE__*/React.createElement("div", {
+    className: "text-xs text-stone-400 whitespace-nowrap",
+    style: {
+      fontFamily: MONO
+    }
+  }, formatDate(entry.timestamp)));
+}
+function AuditView({
+  auditLog,
+  users,
+  onExport
+}) {
+  const [filterUser, setFilterUser] = useState("all");
+  const [filterAction, setFilterAction] = useState("all");
+  const filtered = auditLog.filter(e => (filterUser === "all" || e.userId === filterUser) && (filterAction === "all" || e.action === filterAction));
+  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement(Toolbar, {
+    description: "Every create, edit, and delete across the system — attributed to the logged-in user, with old → new values shown for edits."
+  }, /*#__PURE__*/React.createElement(GhostButton, {
+    onClick: onExport,
+    icon: DownloadIcon
+  }, "Export CSV")), /*#__PURE__*/React.createElement("div", {
+    className: "flex gap-3 flex-wrap mb-4"
+  }, /*#__PURE__*/React.createElement("select", {
+    value: filterUser,
+    onChange: e => setFilterUser(e.target.value),
+    className: "sftc-input",
+    style: {
+      width: "auto"
+    }
+  }, /*#__PURE__*/React.createElement("option", {
+    value: "all"
+  }, "All users"), users.map(u => /*#__PURE__*/React.createElement("option", {
+    key: u.id,
+    value: u.id
+  }, u.name))), /*#__PURE__*/React.createElement("select", {
+    value: filterAction,
+    onChange: e => setFilterAction(e.target.value),
+    className: "sftc-input",
+    style: {
+      width: "auto"
+    }
+  }, /*#__PURE__*/React.createElement("option", {
+    value: "all"
+  }, "All actions"), /*#__PURE__*/React.createElement("option", {
+    value: "Created"
+  }, "Created"), /*#__PURE__*/React.createElement("option", {
+    value: "Updated"
+  }, "Updated"), /*#__PURE__*/React.createElement("option", {
+    value: "Deleted"
+  }, "Deleted"))), /*#__PURE__*/React.createElement("div", {
+    className: "bg-white rounded-lg",
+    style: {
+      border: `1px solid ${COLORS.line}`
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "divide-y",
+    style: {
+      borderColor: COLORS.line
+    }
+  }, filtered.length === 0 && /*#__PURE__*/React.createElement(EmptyRow, {
+    span: 1,
+    text: "No activity matches these filters."
+  }), filtered.map(e => /*#__PURE__*/React.createElement(AuditRow, {
+    key: e.id,
+    entry: e,
+    users: users
+  })))));
+}
+
+// ---------------------------------------------------------------------------
+// Settings
+// ---------------------------------------------------------------------------
+function SettingsView({
+  retention,
+  setRetention,
+  onExportAccounts,
+  onExportBills,
+  onExportAudit,
+  onExportFull,
+  accounts,
+  bills,
+  auditLog
+}) {
+  const usedMB = 38,
+    totalMB = 500,
+    pct = usedMB / totalMB * 100;
+  return /*#__PURE__*/React.createElement("div", {
+    className: "space-y-6 max-w-3xl"
+  }, /*#__PURE__*/React.createElement(Panel, {
+    title: "Database storage"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center gap-2 mb-3",
+    style: {
+      marginTop: -10
+    }
+  }, /*#__PURE__*/React.createElement(DatabaseIcon, {
+    size: 16,
+    style: {
+      color: COLORS.sage
+    }
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "text-sm text-stone-600 mb-2"
+  }, usedMB, " MB used of ", totalMB, " MB (free tier)"), /*#__PURE__*/React.createElement("div", {
+    className: "w-full h-2 rounded-full",
+    style: {
+      background: COLORS.paperDark
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "h-2 rounded-full",
+    style: {
+      width: `${pct}%`,
+      background: COLORS.sage
+    }
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "text-xs text-stone-500 mt-2"
+  }, "Ledger entries, bills and accounts stay on the database indefinitely — only audit log history is affected by the retention setting below.")), /*#__PURE__*/React.createElement(Panel, {
+    title: "Audit log retention"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "text-sm text-stone-600 mb-3"
+  }, "Automatically archive (export, then remove) audit log entries older than:"), /*#__PURE__*/React.createElement("div", {
+    className: "flex gap-2 flex-wrap"
+  }, [{
+    v: "3",
+    label: "3 months"
+  }, {
+    v: "6",
+    label: "6 months"
+  }, {
+    v: "12",
+    label: "12 months"
+  }, {
+    v: "never",
+    label: "Keep forever"
+  }].map(opt => /*#__PURE__*/React.createElement("button", {
+    key: opt.v,
+    onClick: () => setRetention(opt.v),
+    className: "px-3 py-1.5 rounded-md text-sm",
+    style: retention === opt.v ? {
+      background: COLORS.ink,
+      color: "white"
+    } : {
+      border: `1px solid ${COLORS.line}`
+    }
+  }, opt.label))), /*#__PURE__*/React.createElement("div", {
+    className: "flex items-start gap-2 text-xs text-stone-500 mt-3"
+  }, /*#__PURE__*/React.createElement(AlertCircleIcon, {
+    size: 14,
+    className: "mt-0.5 flex-shrink-0"
+  }), /*#__PURE__*/React.createElement("span", null, "Sale bills, purchase bills and ledger entries are not affected — only operational activity history. A CSV is generated automatically before anything is removed."))), /*#__PURE__*/React.createElement(Panel, {
+    title: "Export data"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "grid grid-cols-1 sm:grid-cols-2 gap-3"
+  }, /*#__PURE__*/React.createElement(ExportButton, {
+    label: `Accounts (${accounts.length})`,
+    onClick: onExportAccounts
+  }), /*#__PURE__*/React.createElement(ExportButton, {
+    label: `Sale Bills (${bills.length})`,
+    onClick: onExportBills
+  }), /*#__PURE__*/React.createElement(ExportButton, {
+    label: `Audit Log (${auditLog.length})`,
+    onClick: onExportAudit
+  }), /*#__PURE__*/React.createElement(ExportButton, {
+    label: "Full backup (JSON)",
+    onClick: onExportFull
+  }))));
+}
+function ExportButton({
+  label,
+  onClick
+}) {
+  return /*#__PURE__*/React.createElement("button", {
+    onClick: onClick,
+    className: "flex items-center justify-between px-4 py-3 rounded-md text-sm",
+    style: {
+      border: `1px solid ${COLORS.line}`
+    }
+  }, /*#__PURE__*/React.createElement("span", null, label), /*#__PURE__*/React.createElement(FileDownIcon, {
+    size: 16,
+    style: {
+      color: COLORS.rust
+    }
+  }));
+}
+
+// ---------------------------------------------------------------------------
+// Modals
+// ---------------------------------------------------------------------------
+function ModalShell({
+  title,
+  children,
+  onClose,
+  wide
+}) {
+  return /*#__PURE__*/React.createElement("div", {
+    className: "fixed inset-0 z-20 flex items-center justify-center p-4",
+    style: {
+      background: "rgba(30,42,32,0.5)"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: `bg-white rounded-lg w-full ${wide ? "max-w-2xl" : "max-w-md"} max-h-[90vh] overflow-y-auto`
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center justify-between px-5 py-4",
+    style: {
+      borderBottom: `1px solid ${COLORS.line}`
+    }
+  }, /*#__PURE__*/React.createElement("h3", {
+    className: "font-semibold",
+    style: {
+      fontFamily: SERIF
+    }
+  }, title), /*#__PURE__*/React.createElement("button", {
+    onClick: onClose,
+    className: "text-stone-400 hover:text-stone-700"
+  }, /*#__PURE__*/React.createElement(XIcon, {
+    size: 18
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "p-5"
+  }, children)));
+}
+function AccountModal({
+  mode,
+  account,
+  onClose,
+  onSave
+}) {
+  const [form, setForm] = useState(account ? {
+    ...account
+  } : {
+    name: "",
+    place: "",
+    type: "Trader",
+    mobile: "",
+    gstin: "",
+    balance: 0,
+    balanceType: "Dr"
+  });
+  const set = (k, v) => setForm(prev => ({
+    ...prev,
+    [k]: v
+  }));
+  return /*#__PURE__*/React.createElement(ModalShell, {
+    title: mode === "edit" ? `Edit account — ${account.name}` : "New account",
+    onClose: onClose
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "space-y-3"
+  }, /*#__PURE__*/React.createElement(Field, {
+    label: "Name"
+  }, /*#__PURE__*/React.createElement("input", {
+    className: "sftc-input",
+    value: form.name,
+    onChange: e => set("name", e.target.value)
+  })), /*#__PURE__*/React.createElement(Field, {
+    label: "Place"
+  }, /*#__PURE__*/React.createElement("input", {
+    className: "sftc-input",
+    value: form.place,
+    onChange: e => set("place", e.target.value)
+  })), /*#__PURE__*/React.createElement(Field, {
+    label: "Type"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex gap-2 flex-wrap"
+  }, ["Farmer", "Trader", "Bank", "Others"].map(t => /*#__PURE__*/React.createElement("button", {
+    key: t,
+    type: "button",
+    onClick: () => set("type", t),
+    className: "px-3 py-1.5 rounded-md text-sm",
+    style: form.type === t ? {
+      background: COLORS.ink,
+      color: "white"
+    } : {
+      border: `1px solid ${COLORS.line}`
+    }
+  }, t)))), /*#__PURE__*/React.createElement(Field, {
+    label: "Mobile No"
+  }, /*#__PURE__*/React.createElement("input", {
+    className: "sftc-input",
+    value: form.mobile,
+    onChange: e => set("mobile", e.target.value)
+  })), form.type === "Trader" && /*#__PURE__*/React.createElement(Field, {
+    label: "GSTIN"
+  }, /*#__PURE__*/React.createElement("input", {
+    className: "sftc-input",
+    value: form.gstin,
+    onChange: e => set("gstin", e.target.value)
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "grid grid-cols-2 gap-3"
+  }, /*#__PURE__*/React.createElement(Field, {
+    label: "Opening Balance"
+  }, /*#__PURE__*/React.createElement("input", {
+    type: "number",
+    className: "sftc-input",
+    value: form.balance,
+    onChange: e => set("balance", e.target.value)
+  })), /*#__PURE__*/React.createElement(Field, {
+    label: "Cr / Dr"
+  }, /*#__PURE__*/React.createElement("select", {
+    className: "sftc-input",
+    value: form.balanceType,
+    onChange: e => set("balanceType", e.target.value)
+  }, /*#__PURE__*/React.createElement("option", {
+    value: "Dr"
+  }, "Dr"), /*#__PURE__*/React.createElement("option", {
+    value: "Cr"
+  }, "Cr"))))), /*#__PURE__*/React.createElement("div", {
+    className: "flex justify-end gap-2 mt-5"
+  }, /*#__PURE__*/React.createElement("button", {
+    onClick: onClose,
+    className: "px-4 py-2 rounded-md text-sm",
+    style: {
+      border: `1px solid ${COLORS.line}`
+    }
+  }, "Cancel"), /*#__PURE__*/React.createElement("button", {
+    onClick: () => form.name && form.place && onSave(form, account),
+    className: "px-4 py-2 rounded-md text-sm text-white",
+    style: {
+      background: COLORS.rust
+    }
+  }, "Save account")));
+}
+function BillModal({
+  accounts,
+  onClose,
+  onSave,
+  partyTypes,
+  title,
+  defaultDate
+}) {
+  const parties = accounts.filter(a => partyTypes.includes(a.type));
+  const [form, setForm] = useState({
+    date: defaultDate,
+    party: parties[0]?.name || "",
+    lot: "",
+    item: "Dry Chillies",
+    bags: "",
+    weight: "",
+    rate: ""
+  });
+  const set = (k, v) => setForm(prev => ({
+    ...prev,
+    [k]: v
+  }));
+  const amount = (parseFloat(form.weight) || 0) / 100 * (parseFloat(form.rate) || 0);
+  return /*#__PURE__*/React.createElement(ModalShell, {
+    title: title,
+    onClose: onClose,
+    wide: true
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "grid grid-cols-1 sm:grid-cols-2 gap-3"
+  }, /*#__PURE__*/React.createElement(Field, {
+    label: "Date"
+  }, /*#__PURE__*/React.createElement("input", {
+    type: "date",
+    className: "sftc-input",
+    value: form.date,
+    onChange: e => set("date", e.target.value)
+  })), /*#__PURE__*/React.createElement(Field, {
+    label: "Party"
+  }, /*#__PURE__*/React.createElement("select", {
+    className: "sftc-input",
+    value: form.party,
+    onChange: e => set("party", e.target.value)
+  }, parties.map(p => /*#__PURE__*/React.createElement("option", {
+    key: p.id,
+    value: p.name
+  }, p.name)))), /*#__PURE__*/React.createElement(Field, {
+    label: "Lot No"
+  }, /*#__PURE__*/React.createElement("input", {
+    className: "sftc-input",
+    value: form.lot,
+    onChange: e => set("lot", e.target.value)
+  })), /*#__PURE__*/React.createElement(Field, {
+    label: "Item"
+  }, /*#__PURE__*/React.createElement("input", {
+    className: "sftc-input",
+    value: form.item,
+    onChange: e => set("item", e.target.value)
+  })), /*#__PURE__*/React.createElement(Field, {
+    label: "No. of bags"
+  }, /*#__PURE__*/React.createElement("input", {
+    type: "number",
+    className: "sftc-input",
+    value: form.bags,
+    onChange: e => set("bags", e.target.value)
+  })), /*#__PURE__*/React.createElement(Field, {
+    label: "Weight (kg)"
+  }, /*#__PURE__*/React.createElement("input", {
+    type: "number",
+    className: "sftc-input",
+    value: form.weight,
+    onChange: e => set("weight", e.target.value)
+  })), /*#__PURE__*/React.createElement(Field, {
+    label: "Rate / quintal"
+  }, /*#__PURE__*/React.createElement("input", {
+    type: "number",
+    className: "sftc-input",
+    value: form.rate,
+    onChange: e => set("rate", e.target.value)
+  })), /*#__PURE__*/React.createElement(Field, {
+    label: "Amount"
+  }, /*#__PURE__*/React.createElement("input", {
+    className: "sftc-input",
+    value: formatCurrency(amount),
+    readOnly: true,
+    style: {
+      background: COLORS.paperDark
+    }
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "flex justify-end gap-2 mt-5"
+  }, /*#__PURE__*/React.createElement("button", {
+    onClick: onClose,
+    className: "px-4 py-2 rounded-md text-sm",
+    style: {
+      border: `1px solid ${COLORS.line}`
+    }
+  }, "Cancel"), /*#__PURE__*/React.createElement("button", {
+    onClick: () => form.party && form.weight && form.rate && onSave(form),
+    className: "px-4 py-2 rounded-md text-sm text-white",
+    style: {
+      background: COLORS.rust
+    }
+  }, "Save bill")));
+}
+function ConfirmModal({
+  message,
+  onCancel,
+  onConfirm
+}) {
+  return /*#__PURE__*/React.createElement("div", {
+    className: "fixed inset-0 z-30 flex items-center justify-center p-4",
+    style: {
+      background: "rgba(30,42,32,0.5)"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "bg-white rounded-lg w-full max-w-sm p-5"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex items-start gap-3 mb-4"
+  }, /*#__PURE__*/React.createElement(AlertCircleIcon, {
+    size: 20,
+    style: {
+      color: COLORS.rust
+    },
+    className: "flex-shrink-0 mt-0.5"
+  }), /*#__PURE__*/React.createElement("p", {
+    className: "text-sm"
+  }, message)), /*#__PURE__*/React.createElement("div", {
+    className: "flex justify-end gap-2"
+  }, /*#__PURE__*/React.createElement("button", {
+    onClick: onCancel,
+    className: "px-4 py-2 rounded-md text-sm",
+    style: {
+      border: `1px solid ${COLORS.line}`
+    }
+  }, "Cancel"), /*#__PURE__*/React.createElement("button", {
+    onClick: onConfirm,
+    className: "px-4 py-2 rounded-md text-sm text-white",
+    style: {
+      background: COLORS.rust
+    }
+  }, "Confirm"))));
+}
+
+// ---------------------------------------------------------------------------
+// Nav structure
+// ---------------------------------------------------------------------------
+const NAV = [{
+  type: "single",
+  id: "dashboard",
+  label: "Dashboard",
+  icon: LayoutDashboardIcon
+}, {
+  type: "group",
+  id: "g_accounts",
+  label: "Accounts",
+  icon: UsersIcon,
+  items: [{
+    id: "accounts",
+    label: "Accounts List"
+  }, {
+    id: "statement",
+    label: "Account Statement"
+  }, {
+    id: "merge",
+    label: "Merge / Transfer"
+  }, {
+    id: "rename",
+    label: "Name Correction"
+  }]
+}, {
+  type: "group",
+  id: "g_trading",
+  label: "Arrivals & Trading",
+  icon: TruckIcon,
+  items: [{
+    id: "avak",
+    label: "Avak Entry"
+  }, {
+    id: "avaklist",
+    label: "Avak List"
+  }, {
+    id: "tender",
+    label: "Tender / Rate Entry"
+  }, {
+    id: "rates",
+    label: "Market Rates"
+  }, {
+    id: "variety",
+    label: "Variety Master"
+  }]
+}, {
+  type: "group",
+  id: "g_billing",
+  label: "Billing",
+  icon: ReceiptIcon,
+  items: [{
+    id: "bills",
+    label: "Sale Bill"
+  }, {
+    id: "purchase",
+    label: "Purchase Bill"
+  }, {
+    id: "editcancel",
+    label: "Edit / Cancel"
+  }, {
+    id: "delivery",
+    label: "Delivery Book"
+  }]
+}, {
+  type: "group",
+  id: "g_books",
+  label: "Books & Registers",
+  icon: BookOpenIcon,
+  items: [{
+    id: "daybook",
+    label: "Day Book"
+  }, {
+    id: "cashbook",
+    label: "Cash Book"
+  }, {
+    id: "weighment",
+    label: "Weighment Register"
+  }, {
+    id: "akada",
+    label: "Akada"
+  }, {
+    id: "mortgage",
+    label: "Mortgage Register"
+  }]
+}, {
+  type: "group",
+  id: "g_reports",
+  label: "Reports",
+  icon: FileTextIcon,
+  items: [{
+    id: "cessgst",
+    label: "Cess / GST Report"
+  }, {
+    id: "gsttds",
+    label: "GST / TDS Settings"
+  }, {
+    id: "trialbalance",
+    label: "Trial Balance & P&L"
+  }, {
+    id: "commission",
+    label: "Buyer Commission"
+  }, {
+    id: "expenses",
+    label: "Farmer Expenses"
+  }, {
+    id: "marketlist",
+    label: "Market List"
+  }]
+}, {
+  type: "single",
+  id: "audit",
+  label: "Audit Trail",
+  icon: HistoryIcon
+}, {
+  type: "single",
+  id: "settings",
+  label: "Settings & Export",
+  icon: SettingsIcon
+}];
+const PAGE_LABELS = {};
+NAV.forEach(n => {
+  if (n.type === "single") PAGE_LABELS[n.id] = n.label;else n.items.forEach(it => {
+    PAGE_LABELS[it.id] = it.label;
+  });
+});
+
+// ---------------------------------------------------------------------------
+// App
+// ---------------------------------------------------------------------------
+function App() {
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [activeTab, setActiveTab] = useState("dashboard");
+  const [activeUserId, setActiveUserId] = useState("u1");
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [openGroups, setOpenGroups] = useState({
+    g_accounts: true,
+    g_trading: true,
+    g_billing: true,
+    g_books: false,
+    g_reports: false
+  });
+  const [toast, setToast] = useState(null);
+  const [accounts, setAccounts] = useState([{
+    id: 1,
+    name: "I C Deshpande",
+    place: "Byadgi",
+    type: "Trader",
+    mobile: "9876543210",
+    gstin: "29CBSPD9242E1ZC",
+    balance: 0,
+    balanceType: "Dr"
+  }, {
+    id: 2,
+    name: "Halesh K Patil",
+    place: "Hanagal",
+    type: "Farmer",
+    mobile: "9988776655",
+    gstin: "",
+    balance: 8400,
+    balanceType: "Cr"
+  }, {
+    id: 3,
+    name: "HDFC Bank - Byadgi Branch",
+    place: "Byadgi",
+    type: "Bank",
+    mobile: "",
+    gstin: "",
+    balance: 431721.35,
+    balanceType: "Dr"
+  }, {
+    id: 4,
+    name: "Shivanand Traders",
+    place: "Haveri",
+    type: "Trader",
+    mobile: "9090909090",
+    gstin: "29ABCDE1234F1Z5",
+    balance: 18500,
+    balanceType: "Dr"
+  }]);
+  const [bills, setBills] = useState([{
+    id: 1,
+    billNo: 43,
+    date: "2026-05-04",
+    party: "I C Deshpande",
+    lot: 2,
+    item: "Dry Chillies",
+    bags: 8,
+    weight: 198.0,
+    rate: 6989,
+    amount: 15005.0
+  }, {
+    id: 2,
+    billNo: 44,
+    date: "2026-05-07",
+    party: "Shivanand Traders",
+    lot: 5,
+    item: "Dry Chillies",
+    bags: 14,
+    weight: 712.0,
+    rate: 7120,
+    amount: 50694.4
+  }]);
+  const [purchaseBills, setPurchaseBills] = useState([{
+    id: 1,
+    billNo: 21,
+    date: "2026-05-05",
+    party: "Halesh K Patil",
+    lot: 1,
+    item: "Dry Chillies",
+    bags: 45,
+    weight: 2295.0,
+    rate: 6800,
+    amount: 156060.0
+  }]);
+  const [avakEntries, setAvakEntries] = useState([{
+    id: 1,
+    date: "2026-05-04",
+    place: "Hanagal",
+    farmer: "Halesh K Patil",
+    lot: "1",
+    variety: "Byadgi",
+    bags: 45,
+    freight: 1200,
+    emptyBags: 2,
+    advance: 5000,
+    unHamali: 218.5,
+    rate: null,
+    buyer: null,
+    billed: false
+  }, {
+    id: 2,
+    date: "2026-05-04",
+    place: "Hanagal",
+    farmer: "Halesh K Patil",
+    lot: "2",
+    variety: "Byadgi",
+    bags: 8,
+    freight: 300,
+    emptyBags: 0,
+    advance: 0,
+    unHamali: 38.8,
+    rate: 6989,
+    buyer: "I C Deshpande",
+    billed: true
+  }, {
+    id: 3,
+    date: "2026-05-07",
+    place: "Hanagal",
+    farmer: "Halesh K Patil",
+    lot: "5",
+    variety: "Byadgi",
+    bags: 14,
+    freight: 500,
+    emptyBags: 1,
+    advance: 0,
+    unHamali: 67.9,
+    rate: 7120,
+    buyer: "Shivanand Traders",
+    billed: true
+  }]);
+  const [auditLog, setAuditLog] = useState([{
+    id: 1,
+    timestamp: "2026-05-04T09:12:00",
+    userId: "u1",
+    action: "Created",
+    table: "Sale Bill",
+    recordLabel: "Bill #43",
+    description: "Created sale bill for I C Deshpande — 8 bags, 198 kg @ ₹6,989/quintal"
+  }, {
+    id: 2,
+    timestamp: "2026-05-07T11:40:00",
+    userId: "u2",
+    action: "Created",
+    table: "Sale Bill",
+    recordLabel: "Bill #44",
+    description: "Created sale bill for Shivanand Traders — 14 bags, 712 kg @ ₹7,120/quintal"
+  }, {
+    id: 3,
+    timestamp: "2026-05-07T14:02:00",
+    userId: "u2",
+    action: "Updated",
+    table: "Market Rate",
+    recordLabel: "Packing / Bag",
+    changes: [{
+      field: "Packing/Bag",
+      old: "₹4.50",
+      new: "₹5.00"
+    }]
+  }, {
+    id: 4,
+    timestamp: "2026-05-10T10:15:00",
+    userId: "u1",
+    action: "Created",
+    table: "Account",
+    recordLabel: "Shivanand Traders",
+    description: "Added new Trader account, Haveri"
+  }, {
+    id: 5,
+    timestamp: "2026-05-12T16:30:00",
+    userId: "u2",
+    action: "Updated",
+    table: "Account",
+    recordLabel: "I C Deshpande",
+    changes: [{
+      field: "Mobile No",
+      old: "—",
+      new: "9876543210"
+    }]
+  }, {
+    id: 6,
+    timestamp: "2026-05-14T09:05:00",
+    userId: "u1",
+    action: "Deleted",
+    table: "Sale Bill",
+    recordLabel: "Bill #41",
+    description: "Cancelled — duplicate entry of Bill #40"
+  }]);
+  const [marketRates, setMarketRates] = useState({
+    effectiveDate: "2026-05-07",
+    packFarmer: 5.0,
+    hamaliFarmer: 4.85,
+    packBuyer: 5.0,
+    hamaliBuyer: 4.85,
+    weighFee: 1.75,
+    dalali: 2.0,
+    cess: 0.6,
+    gst: 5.0
+  });
+  const [varieties, setVarieties] = useState([{
+    id: 1,
+    name: "Byadgi"
+  }, {
+    id: 2,
+    name: "Guntur"
+  }, {
+    id: 3,
+    name: "334"
+  }]);
+  const [deliveries, setDeliveries] = useState([{
+    id: 1,
+    date: "2026-05-05",
+    lot: "2",
+    buyer: "I C Deshpande",
+    bags: 8,
+    status: "Delivered"
+  }]);
+  const [cashEntries, setCashEntries] = useState([{
+    id: 1,
+    date: "2026-04-02",
+    particulars: "Opening cash balance",
+    receipt: 50000,
+    payment: 0
+  }, {
+    id: 2,
+    date: "2026-05-04",
+    particulars: "Hamali paid — Lot 43",
+    receipt: 0,
+    payment: 1500
+  }]);
+  const [mortgages, setMortgages] = useState([{
+    id: 1,
+    party: "Shivanand Traders",
+    lot: "5",
+    amount: 25000,
+    date: "2026-05-08",
+    status: "Active"
+  }]);
+  const [gstTds, setGstTds] = useState({
+    tdsApplicable: true,
+    threshold: "15000",
+    from: "2026-04-01",
+    to: "2027-03-31"
+  });
+  const [farmerExpenses, setFarmerExpenses] = useState([]);
+  const [retention, setRetention] = useState("6");
+  const [accountModal, setAccountModal] = useState(null);
+  const [billModal, setBillModal] = useState(null);
+  const [confirmDelete, setConfirmDelete] = useState(null);
+  const activeUser = USERS.find(u => u.id === activeUserId);
+  function showToast(msg) {
+    setToast(msg);
+    setTimeout(() => setToast(null), 2600);
+  }
+  function addAudit(entry) {
+    setAuditLog(prev => [{
+      id: nextId(),
+      timestamp: new Date().toISOString(),
+      userId: activeUserId,
+      ...entry
+    }, ...prev]);
+  }
+  function handleSaveAccount(form, original) {
+    if (original) {
+      const changes = [];
+      ["name", "place", "mobile", "gstin", "balance", "balanceType"].forEach(f => {
+        const oldV = original[f] ?? "";
+        const newV = form[f] ?? "";
+        if (String(oldV) !== String(newV)) changes.push({
+          field: fieldLabel(f),
+          old: oldV === "" ? "—" : String(oldV),
+          new: newV === "" ? "—" : String(newV)
+        });
+      });
+      setAccounts(prev => prev.map(a => a.id === original.id ? {
+        ...a,
+        ...form
+      } : a));
+      if (changes.length) addAudit({
+        action: "Updated",
+        table: "Account",
+        recordLabel: form.name,
+        changes
+      });
+      showToast(`Saved changes to ${form.name}`);
+    } else {
+      setAccounts(prev => [...prev, {
+        id: nextId(),
+        ...form
+      }]);
+      addAudit({
+        action: "Created",
+        table: "Account",
+        recordLabel: form.name,
+        description: `Added new ${form.type} account, ${form.place}`
+      });
+      showToast(`Added account: ${form.name}`);
+    }
+    setAccountModal(null);
+  }
+  function handleDeleteAccount(id) {
+    const acc = accounts.find(a => a.id === id);
+    setAccounts(prev => prev.filter(a => a.id !== id));
+    addAudit({
+      action: "Deleted",
+      table: "Account",
+      recordLabel: acc.name,
+      description: `Removed ${acc.type.toLowerCase()} account`
+    });
+    showToast(`Removed account: ${acc.name}`);
+    setConfirmDelete(null);
+  }
+  function handleMergeAccounts(fromName, toName) {
+    setAccounts(prev => prev.filter(a => a.name !== fromName));
+    addAudit({
+      action: "Updated",
+      table: "Account",
+      recordLabel: toName,
+      description: `Merged "${fromName}" into "${toName}"`
+    });
+    showToast(`Merged ${fromName} into ${toName}`);
+  }
+  function handleRenameAccount(oldName, newName) {
+    setAccounts(prev => prev.map(a => a.name === oldName ? {
+      ...a,
+      name: newName
+    } : a));
+    addAudit({
+      action: "Updated",
+      table: "Account",
+      recordLabel: newName,
+      changes: [{
+        field: "Name",
+        old: oldName,
+        new: newName
+      }]
+    });
+    showToast(`Renamed ${oldName} → ${newName}`);
+  }
+  function makeBillSaver(setter, tableLabel) {
+    return function (form) {
+      const weight = parseFloat(form.weight) || 0;
+      const rate = parseFloat(form.rate) || 0;
+      const amount = weight / 100 * rate;
+      setter(prev => {
+        const billNo = Math.max(0, ...prev.map(b => b.billNo)) + 1;
+        addAudit({
+          action: "Created",
+          table: tableLabel,
+          recordLabel: `Bill #${billNo}`,
+          description: `Created ${tableLabel.toLowerCase()} for ${form.party} — ${form.bags} bags, ${weight} kg @ ₹${rate}/quintal`
+        });
+        showToast(`Created Bill #${billNo}`);
+        return [...prev, {
+          id: nextId(),
+          billNo,
+          date: form.date,
+          party: form.party,
+          lot: form.lot,
+          item: form.item,
+          bags: parseInt(form.bags) || 0,
+          weight,
+          rate,
+          amount
+        }];
+      });
+      setBillModal(null);
+    };
+  }
+  const handleSaveBill = makeBillSaver(setBills, "Sale Bill");
+  const handleSavePurchase = makeBillSaver(setPurchaseBills, "Purchase Bill");
+  function handleDeleteBillFrom(setter, list, id, label) {
+    const bill = list.find(b => b.id === id);
+    if (!bill) return;
+    setter(prev => prev.filter(b => b.id !== id));
+    addAudit({
+      action: "Deleted",
+      table: label,
+      recordLabel: `Bill #${bill.billNo}`,
+      description: `Cancelled bill for ${bill.party}`
+    });
+    showToast(`Cancelled Bill #${bill.billNo}`);
+  }
+  function handleCancelBillByNumber(billNo) {
+    const num = parseInt(billNo);
+    const found = bills.find(b => b.billNo === num);
+    if (!found) {
+      showToast(`No sale bill #${billNo} found`);
+      return;
+    }
+    setBills(prev => prev.filter(b => b.billNo !== num));
+    addAudit({
+      action: "Deleted",
+      table: "Sale Bill",
+      recordLabel: `Bill #${num}`,
+      description: `Cancelled bill for ${found.party} via Edit/Cancel screen`
+    });
+    showToast(`Cancelled Bill #${num}`);
+  }
+  function handleSimulateEdit(kind, detail) {
+    addAudit({
+      action: "Updated",
+      table: kind,
+      recordLabel: detail.split(":")[0] || kind,
+      description: detail
+    });
+    showToast(`${kind} recorded`);
+  }
+  function handleSaveAvak(form) {
+    const entry = {
+      id: nextId(),
+      date: form.date,
+      place: form.place,
+      farmer: form.farmer,
+      lot: form.lot,
+      variety: form.variety,
+      bags: parseInt(form.bags) || 0,
+      freight: parseFloat(form.freight) || 0,
+      emptyBags: parseInt(form.emptyBags) || 0,
+      advance: parseFloat(form.advance) || 0,
+      unHamali: parseFloat(form.unHamali) || 0,
+      rate: null,
+      buyer: null,
+      billed: false
+    };
+    setAvakEntries(prev => [...prev, entry]);
+    addAudit({
+      action: "Created",
+      table: "Avak Entry",
+      recordLabel: `Lot ${form.lot} — ${form.farmer}`,
+      description: `${entry.bags} bags received from ${form.place}`
+    });
+    showToast(`Recorded arrival — Lot ${form.lot}`);
+  }
+  function handleAssignRate(id, rate, buyer) {
+    setAvakEntries(prev => prev.map(e => e.id === id ? {
+      ...e,
+      rate: parseFloat(rate),
+      buyer
+    } : e));
+    addAudit({
+      action: "Updated",
+      table: "Avak Entry",
+      recordLabel: `Lot assigned rate`,
+      description: `Rate ₹${rate}/quintal set, buyer ${buyer}`
+    });
+    showToast("Rate saved");
+  }
+  function handleGenerateBillFromLot(entry) {
+    setBills(prev => {
+      const billNo = Math.max(0, ...prev.map(b => b.billNo)) + 1;
+      const weight = entry.bags * 51;
+      const amount = weight / 100 * entry.rate;
+      addAudit({
+        action: "Created",
+        table: "Sale Bill",
+        recordLabel: `Bill #${billNo}`,
+        description: `Generated from Lot ${entry.lot} via Tender — ${entry.bags} bags @ ₹${entry.rate}/quintal`
+      });
+      return [...prev, {
+        id: nextId(),
+        billNo,
+        date: entry.date,
+        party: entry.buyer,
+        lot: entry.lot,
+        item: "Dry Chillies",
+        bags: entry.bags,
+        weight,
+        rate: entry.rate,
+        amount
+      }];
+    });
+    setAvakEntries(prev => prev.map(e => e.id === entry.id ? {
+      ...e,
+      billed: true
+    } : e));
+    showToast(`Generated sale bill for Lot ${entry.lot}`);
+  }
+  function handleSaveRates(form) {
+    setMarketRates(form);
+    addAudit({
+      action: "Updated",
+      table: "Market Rate",
+      recordLabel: "Default rates",
+      description: "Updated default packing/hamali/commission/cess/GST rates"
+    });
+    showToast("Market rates saved");
+  }
+  function handleAddVariety(name) {
+    setVarieties(prev => [...prev, {
+      id: nextId(),
+      name
+    }]);
+    addAudit({
+      action: "Created",
+      table: "Variety",
+      recordLabel: name,
+      description: "Added new variety"
+    });
+    showToast(`Added variety: ${name}`);
+  }
+  function handleDeleteVariety(id) {
+    const v = varieties.find(x => x.id === id);
+    setVarieties(prev => prev.filter(x => x.id !== id));
+    addAudit({
+      action: "Deleted",
+      table: "Variety",
+      recordLabel: v.name,
+      description: "Removed variety"
+    });
+    showToast(`Removed variety: ${v.name}`);
+  }
+  function handleAddDelivery(form) {
+    setDeliveries(prev => [...prev, {
+      id: nextId(),
+      date: form.date,
+      lot: form.lot,
+      buyer: form.buyer,
+      bags: parseInt(form.bags) || 0,
+      status: "Delivered"
+    }]);
+    addAudit({
+      action: "Created",
+      table: "Delivery",
+      recordLabel: `Lot ${form.lot}`,
+      description: `Marked delivered to ${form.buyer}`
+    });
+    showToast("Delivery recorded");
+  }
+  function handleAddCash(form) {
+    setCashEntries(prev => [...prev, {
+      id: nextId(),
+      date: form.date,
+      particulars: form.particulars,
+      receipt: form.receipt,
+      payment: form.payment
+    }]);
+    addAudit({
+      action: "Created",
+      table: "Cash Book",
+      recordLabel: form.particulars,
+      description: `Receipt ${formatCurrency(form.receipt || 0)} / Payment ${formatCurrency(form.payment || 0)}`
+    });
+    showToast("Cash entry added");
+  }
+  function handleAddMortgage(form) {
+    setMortgages(prev => [...prev, {
+      id: nextId(),
+      party: form.party,
+      lot: form.lot,
+      amount: parseFloat(form.amount) || 0,
+      date: form.date,
+      status: "Active"
+    }]);
+    addAudit({
+      action: "Created",
+      table: "Mortgage Register",
+      recordLabel: form.party,
+      description: `Advance ${formatCurrency(form.amount || 0)} against Lot ${form.lot}`
+    });
+    showToast("Mortgage entry recorded");
+  }
+  function handleSaveGstTds(form) {
+    setGstTds(form);
+    addAudit({
+      action: "Updated",
+      table: "GST/TDS Settings",
+      recordLabel: "TDS configuration",
+      description: `TDS ${form.tdsApplicable ? "enabled" : "disabled"}, threshold: ${form.threshold === "all" ? "all bills" : "under ₹15,000"}`
+    });
+    showToast("GST/TDS settings saved");
+  }
+  function handleAddExpense(form) {
+    setFarmerExpenses(prev => [...prev, {
+      id: nextId(),
+      date: form.date,
+      farmer: form.farmer,
+      description: form.description,
+      amount: parseFloat(form.amount) || 0
+    }]);
+    addAudit({
+      action: "Created",
+      table: "Farmer Expense",
+      recordLabel: form.farmer,
+      description: `${form.description} — ${formatCurrency(form.amount || 0)}`
+    });
+    showToast("Expense recorded");
+  }
+  function exportAccounts() {
+    downloadCSV("accounts.csv", ["id", "name", "place", "type", "mobile", "gstin", "balance", "balanceType"], accounts);
+    showToast("Exported accounts.csv");
+  }
+  function exportBills() {
+    downloadCSV("sale_bills.csv", ["billNo", "date", "party", "lot", "item", "bags", "weight", "rate", "amount"], bills);
+    showToast("Exported sale_bills.csv");
+  }
+  function exportPurchaseBills() {
+    downloadCSV("purchase_bills.csv", ["billNo", "date", "party", "lot", "item", "bags", "weight", "rate", "amount"], purchaseBills);
+    showToast("Exported purchase_bills.csv");
+  }
+  function exportAudit() {
+    const rows = auditLog.map(e => ({
+      timestamp: e.timestamp,
+      user: USERS.find(u => u.id === e.userId)?.name || e.userId,
+      action: e.action,
+      table: e.table,
+      record: e.recordLabel,
+      detail: e.changes ? e.changes.map(c => `${c.field}: ${c.old} -> ${c.new}`).join("; ") : e.description
+    }));
+    downloadCSV("audit_log.csv", ["timestamp", "user", "action", "table", "record", "detail"], rows);
+    showToast("Exported audit_log.csv");
+  }
+  function exportFullBackup() {
+    downloadJSON("sftc_full_backup.json", {
+      exportedAt: new Date().toISOString(),
+      accounts,
+      bills,
+      purchaseBills,
+      avakEntries,
+      auditLog
+    });
+    showToast("Exported full backup (JSON)");
+  }
+  function toggleGroup(id) {
+    setOpenGroups(prev => ({
+      ...prev,
+      [id]: !prev[id]
+    }));
+  }
+  if (!loggedIn) return /*#__PURE__*/React.createElement(LoginScreen, {
+    onLogin: uid => {
+      setActiveUserId(uid);
+      setLoggedIn(true);
+    }
+  });
+  return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("style", null, `.sftc-input { width:100%; padding:8px 10px; border:1px solid ${COLORS.line}; border-radius:6px; font-size:14px; outline:none; background:white; } .sftc-input:focus { border-color:${COLORS.rust}; }`), /*#__PURE__*/React.createElement("div", {
+    className: "min-h-screen flex",
+    style: {
+      background: COLORS.paper,
+      color: COLORS.charcoal,
+      fontFamily: '-apple-system, "Segoe UI", Roboto, sans-serif'
+    }
+  }, /*#__PURE__*/React.createElement("aside", {
+    className: "w-72 flex-shrink-0 flex flex-col",
+    style: {
+      background: COLORS.ink,
+      maxHeight: "100vh",
+      overflowY: "auto"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "px-6 py-6 flex items-center gap-3 sticky top-0",
+    style: {
+      background: COLORS.ink
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "w-10 h-10 rounded flex items-center justify-center font-bold text-white flex-shrink-0",
+    style: {
+      background: COLORS.rust,
+      fontFamily: SERIF
+    }
+  }, "SF"), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    className: "text-white font-semibold leading-tight text-sm",
+    style: {
+      fontFamily: SERIF
+    }
+  }, "Shree Fakkireshwara"), /*#__PURE__*/React.createElement("div", {
+    className: "text-xs",
+    style: {
+      color: "#9CB29D"
+    }
+  }, "Trading Co. · APMC Byadgi"))), /*#__PURE__*/React.createElement("nav", {
+    className: "flex-1 px-3 mt-2 space-y-1 pb-4"
+  }, NAV.map(n => {
+    if (n.type === "single") {
+      const Icon = n.icon;
+      const active = activeTab === n.id;
+      return /*#__PURE__*/React.createElement("button", {
+        key: n.id,
+        onClick: () => setActiveTab(n.id),
+        className: "w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-sm",
+        style: {
+          background: active ? COLORS.rust : "transparent",
+          color: active ? "white" : "#C7D2C8",
+          fontWeight: active ? 600 : 400
+        }
+      }, /*#__PURE__*/React.createElement(Icon, {
+        size: 18
+      }), n.label);
+    }
+    const Icon = n.icon;
+    const open = openGroups[n.id];
+    const hasActive = n.items.some(it => it.id === activeTab);
+    return /*#__PURE__*/React.createElement("div", {
+      key: n.id
+    }, /*#__PURE__*/React.createElement("button", {
+      onClick: () => toggleGroup(n.id),
+      className: "w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-sm",
+      style: {
+        color: hasActive ? "white" : "#C7D2C8",
+        fontWeight: hasActive ? 600 : 400
+      }
+    }, /*#__PURE__*/React.createElement(Icon, {
+      size: 18
+    }), /*#__PURE__*/React.createElement("span", {
+      className: "flex-1 text-left"
+    }, n.label), open ? /*#__PURE__*/React.createElement(ChevronDownIcon, {
+      size: 14
+    }) : /*#__PURE__*/React.createElement(ChevronRightIcon, {
+      size: 14
+    })), open && /*#__PURE__*/React.createElement("div", {
+      className: "ml-4 pl-4 space-y-0.5",
+      style: {
+        borderLeft: "1px solid #2C3D2D"
+      }
+    }, n.items.map(it => {
+      const active = activeTab === it.id;
+      return /*#__PURE__*/React.createElement("button", {
+        key: it.id,
+        onClick: () => setActiveTab(it.id),
+        className: "w-full text-left px-3 py-2 rounded-md text-sm",
+        style: {
+          background: active ? COLORS.rust : "transparent",
+          color: active ? "white" : "#AEC0AF",
+          fontWeight: active ? 600 : 400
+        }
+      }, it.label);
+    })));
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "px-6 py-4 text-xs",
+    style: {
+      color: "#6E8470",
+      borderTop: "1px solid #2C3D2D"
+    }
+  }, "Prototype build · not connected to a live database")), /*#__PURE__*/React.createElement("div", {
+    className: "flex-1 flex flex-col min-w-0"
+  }, /*#__PURE__*/React.createElement("header", {
+    className: "flex items-center justify-between px-8 py-4",
+    style: {
+      borderBottom: `1px solid ${COLORS.line}`,
+      background: "white"
+    }
+  }, /*#__PURE__*/React.createElement("h1", {
+    className: "text-lg font-semibold",
+    style: {
+      fontFamily: SERIF
+    }
+  }, PAGE_LABELS[activeTab]), /*#__PURE__*/React.createElement("div", {
+    className: "relative"
+  }, /*#__PURE__*/React.createElement("button", {
+    onClick: () => setUserMenuOpen(o => !o),
+    className: "flex items-center gap-2 px-3 py-1.5 rounded-md",
+    style: {
+      border: `1px solid ${COLORS.line}`
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-semibold",
+    style: {
+      background: activeUser.color
+    }
+  }, activeUser.initials), /*#__PURE__*/React.createElement("div", {
+    className: "text-left"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "text-sm font-medium leading-tight"
+  }, activeUser.name), /*#__PURE__*/React.createElement("div", {
+    className: "text-xs text-stone-500 leading-tight"
+  }, activeUser.role)), /*#__PURE__*/React.createElement(ChevronDownIcon, {
+    size: 16,
+    className: "text-stone-400"
+  })), userMenuOpen && /*#__PURE__*/React.createElement("div", {
+    className: "absolute right-0 mt-1 w-56 bg-white rounded-md shadow-lg z-10",
+    style: {
+      border: `1px solid ${COLORS.line}`
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "px-3 py-2 text-xs text-stone-500 border-b",
+    style: {
+      borderColor: COLORS.line
+    }
+  }, "Switch logged-in user (demo)"), USERS.map(u => /*#__PURE__*/React.createElement("button", {
+    key: u.id,
+    onClick: () => {
+      setActiveUserId(u.id);
+      setUserMenuOpen(false);
+    },
+    className: "w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-stone-50 text-left"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-semibold",
+    style: {
+      background: u.color
+    }
+  }, u.initials), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    className: "font-medium"
+  }, u.name), /*#__PURE__*/React.createElement("div", {
+    className: "text-xs text-stone-500"
+  }, u.role)), u.id === activeUserId && /*#__PURE__*/React.createElement(CheckIcon, {
+    size: 14,
+    className: "ml-auto",
+    style: {
+      color: COLORS.sage
+    }
+  }))), /*#__PURE__*/React.createElement("button", {
+    onClick: () => {
+      setLoggedIn(false);
+      setUserMenuOpen(false);
+    },
+    className: "w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-stone-50 text-left border-t",
+    style: {
+      borderColor: COLORS.line,
+      color: COLORS.rust
+    }
+  }, /*#__PURE__*/React.createElement(LogOutIcon, {
+    size: 14
+  }), " Log out")))), /*#__PURE__*/React.createElement("main", {
+    className: "flex-1 overflow-y-auto p-8"
+  }, activeTab === "dashboard" && /*#__PURE__*/React.createElement(Dashboard, {
+    accounts: accounts,
+    bills: bills,
+    auditLog: auditLog,
+    users: USERS,
+    setActiveTab: setActiveTab
+  }), activeTab === "accounts" && /*#__PURE__*/React.createElement(AccountsView, {
+    accounts: accounts,
+    onAdd: () => setAccountModal({
+      mode: "add"
+    }),
+    onEdit: a => setAccountModal({
+      mode: "edit",
+      account: a
+    }),
+    onDelete: id => setConfirmDelete({
+      type: "account",
+      id
+    }),
+    onExport: exportAccounts
+  }), activeTab === "statement" && /*#__PURE__*/React.createElement(AccountStatementView, {
+    accounts: accounts
+  }), activeTab === "merge" && /*#__PURE__*/React.createElement(MergeAccountsView, {
+    accounts: accounts,
+    onMerge: handleMergeAccounts
+  }), activeTab === "rename" && /*#__PURE__*/React.createElement(RenameAccountView, {
+    accounts: accounts,
+    onRename: handleRenameAccount
+  }), activeTab === "avak" && /*#__PURE__*/React.createElement(AvakEntryView, {
+    entries: avakEntries,
+    onSave: handleSaveAvak
+  }), activeTab === "avaklist" && /*#__PURE__*/React.createElement(AvakListView, {
+    entries: avakEntries
+  }), activeTab === "tender" && /*#__PURE__*/React.createElement(TenderView, {
+    entries: avakEntries,
+    accounts: accounts,
+    onAssignRate: handleAssignRate,
+    onGenerateBill: handleGenerateBillFromLot
+  }), activeTab === "rates" && /*#__PURE__*/React.createElement(MarketRatesView, {
+    rates: marketRates,
+    onSave: handleSaveRates
+  }), activeTab === "variety" && /*#__PURE__*/React.createElement(VarietyMasterView, {
+    varieties: varieties,
+    onAdd: handleAddVariety,
+    onDelete: handleDeleteVariety
+  }), activeTab === "bills" && /*#__PURE__*/React.createElement(BillsView, {
+    bills: bills,
+    onAdd: () => setBillModal("sale"),
+    onDelete: id => setConfirmDelete({
+      type: "bill",
+      id
+    }),
+    onExport: exportBills,
+    title: "New sale bill",
+    description: "Sale bills (Vikri Patti) issued to traders.",
+    partyLabel: "Trader"
+  }), activeTab === "purchase" && /*#__PURE__*/React.createElement(BillsView, {
+    bills: purchaseBills,
+    onAdd: () => setBillModal("purchase"),
+    onDelete: id => setConfirmDelete({
+      type: "purchase",
+      id
+    }),
+    onExport: exportPurchaseBills,
+    title: "New purchase bill",
+    description: "Purchase bills (Kharidi Patti) raised against farmers.",
+    partyLabel: "Farmer"
+  }), activeTab === "editcancel" && /*#__PURE__*/React.createElement(EditCancelView, {
+    onCancelBill: handleCancelBillByNumber,
+    onSimulate: handleSimulateEdit
+  }), activeTab === "delivery" && /*#__PURE__*/React.createElement(DeliveryBookView, {
+    deliveries: deliveries,
+    onAdd: handleAddDelivery
+  }), activeTab === "daybook" && /*#__PURE__*/React.createElement(DayBookView, {
+    bills: bills,
+    purchaseBills: purchaseBills
+  }), activeTab === "cashbook" && /*#__PURE__*/React.createElement(CashBookView, {
+    entries: cashEntries,
+    onAdd: handleAddCash
+  }), activeTab === "weighment" && /*#__PURE__*/React.createElement(WeighmentRegisterView, {
+    avakEntries: avakEntries
+  }), activeTab === "akada" && /*#__PURE__*/React.createElement(AkadaView, {
+    bills: bills,
+    rates: marketRates
+  }), activeTab === "mortgage" && /*#__PURE__*/React.createElement(MortgageRegisterView, {
+    entries: mortgages,
+    accounts: accounts,
+    onAdd: handleAddMortgage
+  }), activeTab === "cessgst" && /*#__PURE__*/React.createElement(CessGstReportView, {
+    bills: bills,
+    rates: marketRates,
+    showToast: showToast
+  }), activeTab === "gsttds" && /*#__PURE__*/React.createElement(GstTdsSettingsView, {
+    settings: gstTds,
+    onSave: handleSaveGstTds
+  }), activeTab === "trialbalance" && /*#__PURE__*/React.createElement(TrialBalanceView, {
+    accounts: accounts,
+    bills: bills,
+    purchaseBills: purchaseBills,
+    rates: marketRates
+  }), activeTab === "commission" && /*#__PURE__*/React.createElement(CommissionDetailsView, {
+    bills: bills,
+    rates: marketRates
+  }), activeTab === "expenses" && /*#__PURE__*/React.createElement(FarmerExpensesView, {
+    avakEntries: avakEntries,
+    expenses: farmerExpenses,
+    onAdd: handleAddExpense
+  }), activeTab === "marketlist" && /*#__PURE__*/React.createElement(MarketListView, {
+    accounts: accounts
+  }), activeTab === "audit" && /*#__PURE__*/React.createElement(AuditView, {
+    auditLog: auditLog,
+    users: USERS,
+    onExport: exportAudit
+  }), activeTab === "settings" && /*#__PURE__*/React.createElement(SettingsView, {
+    retention: retention,
+    setRetention: setRetention,
+    onExportAccounts: exportAccounts,
+    onExportBills: exportBills,
+    onExportAudit: exportAudit,
+    onExportFull: exportFullBackup,
+    accounts: accounts,
+    bills: bills,
+    auditLog: auditLog
+  }))), accountModal && /*#__PURE__*/React.createElement(AccountModal, {
+    mode: accountModal.mode,
+    account: accountModal.account,
+    onClose: () => setAccountModal(null),
+    onSave: handleSaveAccount
+  }), billModal === "sale" && /*#__PURE__*/React.createElement(BillModal, {
+    accounts: accounts,
+    onClose: () => setBillModal(null),
+    onSave: handleSaveBill,
+    partyTypes: ["Trader"],
+    title: "New sale bill (Vikri Patti)",
+    defaultDate: "2026-05-15"
+  }), billModal === "purchase" && /*#__PURE__*/React.createElement(BillModal, {
+    accounts: accounts,
+    onClose: () => setBillModal(null),
+    onSave: handleSavePurchase,
+    partyTypes: ["Farmer"],
+    title: "New purchase bill (Kharidi Patti)",
+    defaultDate: "2026-05-15"
+  }), confirmDelete && /*#__PURE__*/React.createElement(ConfirmModal, {
+    message: confirmDelete.type === "account" ? "Remove this account? This cannot be undone." : "Cancel this bill? This cannot be undone.",
+    onCancel: () => setConfirmDelete(null),
+    onConfirm: () => {
+      if (confirmDelete.type === "account") handleDeleteAccount(confirmDelete.id);else if (confirmDelete.type === "bill") handleDeleteBillFrom(setBills, bills, confirmDelete.id, "Sale Bill");else handleDeleteBillFrom(setPurchaseBills, purchaseBills, confirmDelete.id, "Purchase Bill");
+      setConfirmDelete(null);
+    }
+  }), toast && /*#__PURE__*/React.createElement("div", {
+    className: "fixed bottom-6 right-6 px-4 py-3 rounded-md shadow-lg text-white text-sm flex items-center gap-2 z-40",
+    style: {
+      background: COLORS.ink
+    }
+  }, /*#__PURE__*/React.createElement(CheckIcon, {
+    size: 16,
+    style: {
+      color: COLORS.gold
+    }
+  }), toast)));
+  function AccountStatementView({
+    accounts
+  }) {
+    const [filterType, setFilterType] = useState("All");
+    const [party, setParty] = useState("");
+    const [from, setFrom] = useState("2026-04-01");
+    const [to, setTo] = useState("2027-03-31");
+    const LEDGER_DATA = {
+      "I C Deshpande": [{
+        date: "2026-05-04",
+        particulars: "Sale Bill #43 — Dry Chillies, 8 bags",
+        credit: 0,
+        debit: 15005.0
+      }, {
+        date: "2026-05-06",
+        particulars: "Payment received — HDFC Bank transfer",
+        credit: 15005.0,
+        debit: 0
+      }],
+      "Shivanand Traders": [{
+        date: "2026-05-07",
+        particulars: "Sale Bill #44 — Dry Chillies, 14 bags",
+        credit: 0,
+        debit: 50694.4
+      }, {
+        date: "2026-05-10",
+        particulars: "Partial payment received",
+        credit: 20000.0,
+        debit: 0
+      }],
+      "Halesh K Patil": [{
+        date: "2026-05-04",
+        particulars: "Avak — Lot No. 1 & 2, 53 bags received",
+        credit: 0,
+        debit: 0
+      }, {
+        date: "2026-05-07",
+        particulars: "Sale proceeds payable to farmer",
+        credit: 8400.0,
+        debit: 0
+      }],
+      "HDFC Bank - Byadgi Branch": [{
+        date: "2026-05-06",
+        particulars: "Received from I C Deshpande",
+        credit: 0,
+        debit: 15005.0
+      }]
+    };
+    const filteredAccounts = filterType === "All" ? accounts : accounts.filter(a => a.type === filterType);
+    const rows = party && LEDGER_DATA[party] ? LEDGER_DATA[party] : [];
+    let running = 0;
+    const withBalance = rows.map(r => {
+      running += r.debit - r.credit;
+      return {
+        ...r,
+        balance: running
+      };
+    });
+    return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("p", {
+      className: "text-sm text-stone-600 max-w-2xl mb-4"
+    }, "Running ledger for any farmer, trader, or bank account — credits, debits, and balance carried forward."), /*#__PURE__*/React.createElement("div", {
+      className: "bg-white rounded-lg p-4 flex flex-wrap items-end gap-3 mb-4",
+      style: {
+        border: `1px solid ${COLORS.line}`
+      }
+    }, /*#__PURE__*/React.createElement(Field, {
+      label: "From"
+    }, /*#__PURE__*/React.createElement("input", {
+      type: "date",
+      className: "sftc-input",
+      value: from,
+      onChange: e => setFrom(e.target.value)
+    })), /*#__PURE__*/React.createElement(Field, {
+      label: "To"
+    }, /*#__PURE__*/React.createElement("input", {
+      type: "date",
+      className: "sftc-input",
+      value: to,
+      onChange: e => setTo(e.target.value)
+    })), /*#__PURE__*/React.createElement(Field, {
+      label: "Account type"
+    }, /*#__PURE__*/React.createElement("select", {
+      className: "sftc-input",
+      value: filterType,
+      onChange: e => {
+        setFilterType(e.target.value);
+        setParty("");
+      }
+    }, ["All", "Farmer", "Trader", "Bank", "Others"].map(t => /*#__PURE__*/React.createElement("option", {
+      key: t,
+      value: t
+    }, t)))), /*#__PURE__*/React.createElement(Field, {
+      label: "Party"
+    }, /*#__PURE__*/React.createElement("select", {
+      className: "sftc-input",
+      value: party,
+      onChange: e => setParty(e.target.value)
+    }, /*#__PURE__*/React.createElement("option", {
+      value: ""
+    }, "Select a party…"), filteredAccounts.map(a => /*#__PURE__*/React.createElement("option", {
+      key: a.id,
+      value: a.name
+    }, a.name))))), /*#__PURE__*/React.createElement(Table, {
+      columns: [{
+        label: "S.No"
+      }, {
+        label: "Date"
+      }, {
+        label: "Particulars"
+      }, {
+        label: "Credit",
+        right: true
+      }, {
+        label: "Debit",
+        right: true
+      }, {
+        label: "Running Balance",
+        right: true
+      }]
+    }, !party && /*#__PURE__*/React.createElement(EmptyRow, {
+      span: 6,
+      text: "Select a party above to view their statement."
+    }), party && withBalance.length === 0 && /*#__PURE__*/React.createElement(EmptyRow, {
+      span: 6,
+      text: "No entries for this party in the selected range."
+    }), withBalance.map((r, i) => /*#__PURE__*/React.createElement("tr", {
+      key: i,
+      className: "border-t",
+      style: {
+        borderColor: COLORS.line
+      }
+    }, /*#__PURE__*/React.createElement(Td, null, i + 1), /*#__PURE__*/React.createElement(Td, null, r.date), /*#__PURE__*/React.createElement(Td, null, r.particulars), /*#__PURE__*/React.createElement(Td, {
+      right: true,
+      mono: true
+    }, r.credit ? formatCurrency(r.credit) : "—"), /*#__PURE__*/React.createElement(Td, {
+      right: true,
+      mono: true
+    }, r.debit ? formatCurrency(r.debit) : "—"), /*#__PURE__*/React.createElement(Td, {
+      right: true,
+      bold: true,
+      mono: true
+    }, formatCurrency(Math.abs(r.balance)), " ", r.balance >= 0 ? "Dr" : "Cr")))));
+  }
+}
+ReactDOM.createRoot(document.getElementById("root")).render(React.createElement(App));
+</script>
+</body>
+</html>
